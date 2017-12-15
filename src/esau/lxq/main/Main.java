@@ -81,6 +81,7 @@ public class Main {
                 System.out.println();
             } else if (k == 2) {
                 System.out.println("Run as Worker");
+                runWorker();
                 System.out.println();
             } else {
                 System.out.println("No such option!");
