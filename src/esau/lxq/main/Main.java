@@ -16,7 +16,7 @@ public class Main {
 
     public static Scanner scanner;
 
-    public static String serverIP = "172.21.52.20";
+    public static String serverIP = "172.21.52.35";
     public static int serverPort = 29000;
 
     public static String[] workerIPs = {"172.21.52.35"};
