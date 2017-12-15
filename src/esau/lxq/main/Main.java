@@ -16,6 +16,11 @@ public class Main {
 
     public static Scanner scanner;
 
+    public static String serverIP = "172.21.52.35";
+    public static int serverPort = 29000;
+
+    public static String clientIP = "172.21.52.20";
+
     public static void main(String[] args) {
         // TODO Auto-generated method stub
 
@@ -103,19 +108,18 @@ public class Main {
 
         ServerSocket server = null;
         try {
-            server = new ServerSocket(29000, num, InetAddress.getByName("172.21.52.20"));
-            System.out.println("Server address: "+server.getInetAddress()+":"+server.getLocalPort());
+            server = new ServerSocket(29000, num, InetAddress.getByName(serverIP));
+            System.out.println("Server address: " + server.getInetAddress() + ":" + server.getLocalPort());
             System.out.println();
             System.out.println("Wait for Workers...");
             System.out.println();
             for (int i = 0; i < num; i++) {
-                
+
                 Socket socket = server.accept();
-                System.out.println("Worker"+i+" : "+socket.getInetAddress());
-                
-                
+                System.out.println("Worker" + i + " : " + socket.getInetAddress());
+
             }
-            
+
             System.out.println();
             System.out.println("Exit!");
         } catch (Exception e) {
@@ -135,26 +139,26 @@ public class Main {
     }
 
     public static void runWorker() {
-        
-        Socket socket=null;
-        
+
+        Socket socket = null;
+
         try {
-            
-            System.out.println("Connecting 172.21.52.20:29000 ...");
-            socket=new Socket("172.21.52.20", 29000);
+
+            System.out.println("Connecting " + serverIP + ":" + serverPort + " ...");
+            socket = new Socket(serverIP, serverPort);
             System.out.println("Success!");
-            
+
             System.out.println("Do something...");
             Thread.sleep(10000);
-            
+
             System.out.println();
             System.out.println("Exit!");
-            
+
         } catch (Exception e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         } finally {
-            if(socket!=null) {
+            if (socket != null) {
                 try {
                     socket.close();
                 } catch (IOException e) {
@@ -163,7 +167,7 @@ public class Main {
                 }
             }
         }
-        
+
     }
 
     private static int[] getPos(StringBuffer xmlDoc, int chunkNum) {
