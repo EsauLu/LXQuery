@@ -16,10 +16,10 @@ public class Main {
 
     public static Scanner scanner;
 
-    public static String serverIP = "172.21.52.35";
+    public static String serverIP = "172.21.52.20";
     public static int serverPort = 29000;
 
-    public static String clientIP = "172.21.52.20";
+    public static String[] workerIPs = {"172.21.52.35"};
 
     public static void main(String[] args) {
         // TODO Auto-generated method stub
@@ -100,23 +100,31 @@ public class Main {
 
     }
 
-    public static void runMaster() {
-
-        System.out.print("please input Workers number: ");
-        int num = scanner.nextInt();
-        System.out.println();
+    public static void runWorker() {
 
         ServerSocket server = null;
         try {
-            server = new ServerSocket(29000, num, InetAddress.getByName(serverIP));
+
+            server = new ServerSocket(29000, 1, InetAddress.getByName(serverIP));
+
             System.out.println("Server address: " + server.getInetAddress() + ":" + server.getLocalPort());
             System.out.println();
-            System.out.println("Wait for Workers...");
+            System.out.println("Wait for Master...");
             System.out.println();
-            for (int i = 0; i < num; i++) {
+
+            while(true) {
 
                 Socket socket = server.accept();
-                System.out.println("Worker" + i + " : " + socket.getInetAddress());
+                
+                System.out.println("Connected a Master : "+socket.getInetAddress());
+                
+                System.out.println("continue? y/n :");
+                
+                String c=scanner.next();
+                
+                if(!c.equals("y")||!c.equals("yes")) {
+                    break;
+                }
 
             }
 
@@ -138,14 +146,21 @@ public class Main {
 
     }
 
-    public static void runWorker() {
+    public static void runMaster() {
 
+
+        System.out.print("please input Workers number: ");
+        int num = scanner.nextInt();
+        System.out.println();
+        
         Socket socket = null;
+        
+        
 
         try {
 
             System.out.println("Connecting " + serverIP + ":" + serverPort + " ...");
-            socket = new Socket(serverIP, serverPort);
+            socket = new Socket(workerIPs[0], serverPort);
             System.out.println("Success!");
 
             System.out.println("Do something...");
