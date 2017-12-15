@@ -19,7 +19,7 @@ public class Main {
     public static String serverIP = "172.21.52.35";
     public static int serverPort = 29000;
 
-    public static String[] workerIPs = {"172.21.52.35"};
+    public static String[] workerIPs = { "172.21.52.35" };
 
     public static void main(String[] args) {
         // TODO Auto-generated method stub
@@ -112,17 +112,17 @@ public class Main {
             System.out.println("Wait for Master...");
             System.out.println();
 
-            while(true) {
+            while (true) {
 
                 Socket socket = server.accept();
-                
-                System.out.println("Connected a Master : "+socket.getInetAddress());
-                
-                System.out.println("continue? y/n :");
-                
-                String c=scanner.next();
-                
-                if(!c.equals("y")||!c.equals("yes")) {
+
+                System.out.println("Connected a Master : " + socket.getInetAddress());
+
+                System.out.print("continue? y/n :");
+
+                String c = scanner.next();
+
+                if (!c.equals("y") && !c.equals("yes")) {
                     break;
                 }
 
@@ -148,14 +148,11 @@ public class Main {
 
     public static void runMaster() {
 
-
         System.out.print("please input Workers number: ");
         int num = scanner.nextInt();
         System.out.println();
-        
+
         Socket socket = null;
-        
-        
 
         try {
 
