@@ -110,30 +110,21 @@ public class Main {
             server = new ServerSocket(29000, 1, InetAddress.getByName(serverIP));
 
             System.out.println("Server address: " + server.getInetAddress() + ":" + server.getLocalPort());
-            
+
             while (true) {
-                
+
                 System.out.println();
                 System.out.println("Wait for Master...");
                 System.out.println();
-
 
                 Socket socket = server.accept();
 
                 System.out.println("Connected a Master : " + socket.getInetAddress());
 
-//                System.out.print("continue? y/n : ");
-//
-//                String c = scanner.next();
-//
-//                if (!c.equals("y") && !c.equals("yes")) {
-//                    break;
-//                }
-
             }
 
-//            System.out.println();
-//            System.out.println("Exit!");
+            // System.out.println();
+            // System.out.println("Exit!");
         } catch (Exception e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -152,16 +143,16 @@ public class Main {
 
     public static void runMaster() {
 
-//        System.out.print("please input Workers number: ");
-//        int num = scanner.nextInt();
-//        System.out.println();
+        // System.out.print("please input Workers number: ");
+        // int num = scanner.nextInt();
+        // System.out.println();
 
-        Map<Integer, Socket> socketMap=new HashMap<>();
+        Map<Integer, Socket> socketMap = new HashMap<>();
 
         try {
-            
-            for(int i=0;i<workerIPs.length;i++) {
-                
+
+            for (int i = 0; i < workerIPs.length; i++) {
+
                 System.out.println("Connecting Worker " + serverIP + ":" + port + " ...");
                 Socket socket = new Socket(workerIPs[i], port);
                 System.out.println("Success!");
@@ -180,8 +171,8 @@ public class Main {
             e.printStackTrace();
         } finally {
             try {
-                for(Socket socket: socketMap.values()) {
-                    if(socket!=null&&!socket.isClosed()) {
+                for (Socket socket : socketMap.values()) {
+                    if (socket != null && !socket.isClosed()) {
                         socket.close();
                     }
                 }
