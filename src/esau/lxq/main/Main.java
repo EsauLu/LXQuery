@@ -8,6 +8,8 @@ import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Scanner;
 
 import esau.lxq.controller.Worker;
@@ -17,9 +19,9 @@ public class Main {
     public static Scanner scanner;
 
     public static String serverIP = "172.21.52.35";
-    public static int serverPort = 29000;
+    public static int port = 29000;
 
-    public static String[] workerIPs = { "172.21.52.35" };
+    public static String[] workerIPs = { "172.21.52.35", "172.21.52.35", "172.21.52.35", "172.21.52.35", "172.21.52.35" };
 
     public static void main(String[] args) {
         // TODO Auto-generated method stub
@@ -108,28 +110,30 @@ public class Main {
             server = new ServerSocket(29000, 1, InetAddress.getByName(serverIP));
 
             System.out.println("Server address: " + server.getInetAddress() + ":" + server.getLocalPort());
-            System.out.println();
-            System.out.println("Wait for Master...");
-            System.out.println();
-
+            
             while (true) {
+                
+                System.out.println();
+                System.out.println("Wait for Master...");
+                System.out.println();
+
 
                 Socket socket = server.accept();
 
                 System.out.println("Connected a Master : " + socket.getInetAddress());
 
-                System.out.print("continue? y/n :");
-
-                String c = scanner.next();
-
-                if (!c.equals("y") && !c.equals("yes")) {
-                    break;
-                }
+//                System.out.print("continue? y/n : ");
+//
+//                String c = scanner.next();
+//
+//                if (!c.equals("y") && !c.equals("yes")) {
+//                    break;
+//                }
 
             }
 
-            System.out.println();
-            System.out.println("Exit!");
+//            System.out.println();
+//            System.out.println("Exit!");
         } catch (Exception e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -152,17 +156,23 @@ public class Main {
         int num = scanner.nextInt();
         System.out.println();
 
-        Socket socket = null;
+        Map<Integer, Socket> socketMap=new HashMap<>();
 
         try {
+            
+            for(int i=0;i<workerIPs.length;i++) {
+                
+                System.out.println("Connecting Worker " + serverIP + ":" + port + " ...");
+                Socket socket = new Socket(workerIPs[i], port);
+                System.out.println("Success!");
 
-            System.out.println("Connecting " + serverIP + ":" + serverPort + " ...");
-            socket = new Socket(workerIPs[0], serverPort);
-            System.out.println("Success!");
+                System.out.println("Do something...");
+                socketMap.put(i, socket);
+                Thread.sleep(5000);
 
-            System.out.println("Do something...");
-            Thread.sleep(10000);
+                System.out.println();
 
+            }
             System.out.println();
             System.out.println("Exit!");
 
@@ -170,13 +180,15 @@ public class Main {
             // TODO Auto-generated catch block
             e.printStackTrace();
         } finally {
-            if (socket != null) {
-                try {
-                    socket.close();
-                } catch (IOException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
+            try {
+                for(Socket socket: socketMap.values()) {
+                    if(socket!=null&&!socket.isClosed()) {
+                        socket.close();
+                    }
                 }
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
             }
         }
 
