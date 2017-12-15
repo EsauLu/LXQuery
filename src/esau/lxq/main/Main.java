@@ -152,9 +152,9 @@ public class Main {
 
     public static void runMaster() {
 
-        System.out.print("please input Workers number: ");
-        int num = scanner.nextInt();
-        System.out.println();
+//        System.out.print("please input Workers number: ");
+//        int num = scanner.nextInt();
+//        System.out.println();
 
         Map<Integer, Socket> socketMap=new HashMap<>();
 
@@ -166,9 +166,8 @@ public class Main {
                 Socket socket = new Socket(workerIPs[i], port);
                 System.out.println("Success!");
 
-                System.out.println("Do something...");
                 socketMap.put(i, socket);
-                Thread.sleep(5000);
+                Thread.sleep(1000);
 
                 System.out.println();
 
