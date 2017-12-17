@@ -4,7 +4,6 @@ import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 
-import esau.lxq.controller.Worker;
 
 public class Main {
 
@@ -18,6 +17,7 @@ public class Main {
             StringBuffer xmlBuff = new StringBuffer();
 
             int len = 0;
+            
             byte[] buff = new byte[1024];
 
             BufferedInputStream bis = new BufferedInputStream(new FileInputStream(file));
@@ -32,9 +32,6 @@ public class Main {
             int[] pos = getPos(xmlBuff, 5);
             for (int i = 0; i < pos.length - 1; i++) {
 
-                Worker worker = new Worker();
-
-                worker.buildPartialtree(xmlBuff.substring(pos[i], pos[i + 1]));
 
                 System.out.println("--------------------------------------------------");
                 
