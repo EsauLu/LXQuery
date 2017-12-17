@@ -7,10 +7,11 @@ public class ControllerFactory {
     private static ResourceBundle bundle = ResourceBundle.getBundle("server");
 
     public static Controller getController() {
-        String className = bundle.getString("ctrl");
+        String className="esau.lxq.net.impl.DefaultController";
         
         try {
             
+            className = bundle.getString("ctrl");
             if(className==null||className.isEmpty()){
                 className="esau.lxq.net.impl.DefaultController";
             }

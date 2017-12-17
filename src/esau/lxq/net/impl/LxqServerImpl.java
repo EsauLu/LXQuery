@@ -1,11 +1,14 @@
 package esau.lxq.net.impl;
 
 import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.List;
 
 import esau.lxq.net.LxqRequest;
 import esau.lxq.net.LxqResponse;
@@ -16,6 +19,8 @@ import esau.lxq.net.ControllerFactory;
 public class LxqServerImpl implements LxqServer {
 
     private ServerSocket server;
+    
+    private Controller ctrl = ControllerFactory.getController();
 
     private String IP;
     private int port;
@@ -38,7 +43,7 @@ public class LxqServerImpl implements LxqServer {
     public void start() {
         // TODO Auto-generated method stub
 
-        if (isClose == false) {
+        if (isClose == true) {
             return;
         }
 
@@ -69,14 +74,12 @@ public class LxqServerImpl implements LxqServer {
             InputStream in = socket.getInputStream();
             OutputStream out = socket.getOutputStream();
 
-            LxqRequest request = getRequest(in);
+            LxqRequest request = getRequest(in);            
             LxqResponse response = new LxqResponseImpl();
-
-            Controller ctrl = ControllerFactory.getController();
 
             ctrl.deal(request, response);
             
-            out.write("-- response --".getBytes());
+            print(out, response);
 
             in.close();
             out.close();
@@ -87,6 +90,25 @@ public class LxqServerImpl implements LxqServer {
             e.printStackTrace();
         }
 
+    }
+    
+    private void print(OutputStream out, LxqResponse response) throws Exception {
+        
+        BufferedOutputStream bos=new BufferedOutputStream(out);
+        
+        StringBuffer sb=new StringBuffer();
+        
+        sb.append(response.getType());
+        sb.append("\n\n");
+        
+        for(String item: response.getResultList()){
+            sb.append(item);
+            sb.append("\n");
+        }
+
+        bos.write(sb.toString().trim().getBytes());
+        bos.flush();
+        
     }
 
     private LxqRequest getRequest(InputStream in) throws Exception {
@@ -106,19 +128,36 @@ public class LxqServerImpl implements LxqServer {
     private LxqRequest parse(StringBuffer sb) {
 
         LxqRequest request = new LxqRequestImpl();
+        
+        int k=sb.indexOf("\n\n");
+        
+        String codeStr=sb.substring(0, k);
+        
+        int code=Integer.parseInt(codeStr);
+        request.setCode(Integer.parseInt(codeStr));
+        
+        String paramsStr=sb.substring(k+2);
+        
+        if(code==LxqRequest.CHUNK){
 
-        int t = sb.indexOf("\n\n");
-        String head = sb.substring(0, t);
-        String content = sb.substring(t + 2);
-
-        String[] parms = head.split("\n");
-        for (String param : parms) {
-            int i = param.indexOf(':');
-            request.setParam(param.substring(0, i), param.substring(i + 1));
+            request.setChunk(paramsStr);
+            
+        }else{
+            
+            k=paramsStr.indexOf("\n\n");
+            
+            String nameTest=paramsStr.substring(0, k);
+            request.setNameTest(nameTest);
+            
+            String inputListStr=paramsStr.substring(k+2).trim();
+            List<String> inputList=new ArrayList<String>();
+            for(String item: inputListStr.split("\n")){
+                inputList.add(item);
+            }
+            request.setInputList(inputList);
+            
         }
-
-        request.setContent(content);
-
+        
         return request;
 
     }

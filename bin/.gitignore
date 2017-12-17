@@ -2,3 +2,5 @@
 /esau/
 /res/
 /.DS_Store
+/bean.properties
+/server.properties

@@ -1,20 +1,27 @@
 package esau.lxq.net;
 
-import java.util.Map;
+import java.util.List;
 
 public interface LxqRequest {
 
-    public static final String CODE="code";
-    public static final String CONTENT="content";
+    public static final int CHUNK = 100;
     
+    public static final int FIND_CHILD=101;
+
     public void setCode(int code);
+
     public int getCode();
-    public void setParam(String key, String value);
-    public String getParam(String key);
-    
-    public String getContent();
-    public void setContent(String content);
-    
-    public Map<String, String> getParams();
+
+    public void setNameTest(String test);
+
+    public String getNameTest();
+
+    public void setInputList(List<String> inputList);
+
+    public List<String> getInputList();
+
+    public void setChunk(String chunk);
+
+    public String getChunk();
 
 }
