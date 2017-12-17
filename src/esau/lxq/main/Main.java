@@ -1,49 +1,37 @@
 package esau.lxq.main;
 
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-
+import java.util.Scanner;
 
 public class Main {
+    
+    private static Scanner scn;
 
     public static void main(String[] args) {
         // TODO Auto-generated method stub
+        
+        scn=new Scanner(System.in);        
 
-        try {
-            File file = new File("res/test2.xml");
-//            File file = new File("res/test1.xml");
-
-            StringBuffer xmlBuff = new StringBuffer();
-
-            int len = 0;
-            
-            byte[] buff = new byte[1024];
-
-            BufferedInputStream bis = new BufferedInputStream(new FileInputStream(file));
-
-            while ((len = bis.read(buff)) != -1) {
-                xmlBuff.append(new String(buff, 0, len));
-            }
-
-            System.out.println(xmlBuff.toString());
-            System.out.println("--------------------------------------------------");
-
-            int[] pos = getPos(xmlBuff, 5);
-            for (int i = 0; i < pos.length - 1; i++) {
-
-
-                System.out.println("--------------------------------------------------");
-                
-            }
-
-            bis.close();
-
-        } catch (Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+        System.out.println("1. master");
+        System.out.println("2. worker");
+        
+        int k=scn.nextInt();
+        
+        if(k==1){
+            master();
+        }else{
+            worker();
         }
-
+        
+        scn.close();
+        
+    }
+    
+    public static void worker(){
+        System.out.println("worer");
+    }
+    
+    public static void master(){
+        System.out.println("master");
     }
 
     private static int[] getPos(StringBuffer xmlDoc, int chunkNum) {
