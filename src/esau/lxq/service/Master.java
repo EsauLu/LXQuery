@@ -1,6 +1,16 @@
 package esau.lxq.service;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.List;
+
 public class Master {
+
+    private List<Integer> pidList;
 
     private ClientManager clientManager = new ClientManager();
 
@@ -19,79 +29,64 @@ public class Master {
     }
 
     public void start() {
+        build();
+    }
+
+    private void build() {
 
         String xmlDocPath = "res/test0.xml";
+        dispatchXMLDocument(xmlDocPath);
 
     }
-    
-    private void dispatchXMLDocument(String xmlDocPath){
-        
-        
-        
-    }
-    
-    private static int[] getPos(StringBuffer xmlDoc, int chunkNum) {
 
-        int[] pos = new int[chunkNum + 1];
-        int t = xmlDoc.length() / chunkNum + 1;
+    private void dispatchXMLDocument(String xmlDocPath) {
+
+        File file = new File(xmlDocPath);
+
+        if (!file.exists() || !file.isFile()) {
+            return;
+        }
+
+        BufferedReader reader = null;
+
+        StringBuffer xml = new StringBuffer();
+
+        try {
+
+            reader = new BufferedReader(new InputStreamReader(new FileInputStream(file)));
+
+            String line = "";
+            while ((line = reader.readLine()) != null) {
+                xml.append(line);
+                xml.append("\n");
+            }
+
+            System.out.println(xml);
+
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } finally {
+            try {
+                if (reader != null) {
+                    reader.close();
+                }
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
+
+    }
+
+    private long[] getPos(long len, int chunkNum) {
+        long[] pos = new long[chunkNum + 1];
+        long t = len / chunkNum + 1;
         for (int i = 0; i < chunkNum; i++) {
             pos[i] = i * t;
         }
-        pos[chunkNum] = xmlDoc.length();
-        return fixPos(xmlDoc, pos);
-    }
-
-    private static int[] fixPos(StringBuffer xmlDoc, int[] pos) {
-        long len = xmlDoc.length();
-        for (int i = 0; i < pos.length; i++) {
-            if (pos[i] >= len) {
-                pos[i] = (int) len;
-                continue;
-            }
-            while (xmlDoc.charAt(pos[i]) != '<') {
-                pos[i]--;
-            }
-        }
+        pos[chunkNum] = len;
         return pos;
     }
 
-
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
