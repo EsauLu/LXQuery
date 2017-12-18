@@ -173,29 +173,4 @@ public class Main {
     }  
 
 
-    private static int[] getPos(StringBuffer xmlDoc, int chunkNum) {
-
-        int[] pos = new int[chunkNum + 1];
-        int t = xmlDoc.length() / chunkNum + 1;
-        for (int i = 0; i < chunkNum; i++) {
-            pos[i] = i * t;
-        }
-        pos[chunkNum] = xmlDoc.length();
-        return fixPos(xmlDoc, pos);
-    }
-
-    private static int[] fixPos(StringBuffer xmlDoc, int[] pos) {
-        long len = xmlDoc.length();
-        for (int i = 0; i < pos.length; i++) {
-            if (pos[i] >= len) {
-                pos[i] = (int) len;
-                continue;
-            }
-            while (xmlDoc.charAt(pos[i]) != '<') {
-                pos[i]--;
-            }
-        }
-        return pos;
-    }
-
 }
