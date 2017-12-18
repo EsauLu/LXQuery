@@ -1,8 +1,5 @@
 package esau.lxq.main;
 
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileInputStream;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
@@ -11,13 +8,7 @@ import java.util.Enumeration;
 import java.util.List;
 import java.util.Scanner;
 
-import esau.lxq.net.ControllerFactory;
-import esau.lxq.net.LxqClient;
-import esau.lxq.net.LxqRequest;
-import esau.lxq.net.LxqResponse;
 import esau.lxq.net.LxqServer;
-import esau.lxq.net.impl.LxqClientImpl;
-import esau.lxq.net.impl.LxqRequestImpl;
 import esau.lxq.net.impl.LxqServerImpl;
 import esau.lxq.service.Master;
 
@@ -52,25 +43,22 @@ public class Main {
     }
     
     public static void worker(){
+        
         System.out.println("worer");
-                
-        System.out.println(ControllerFactory.getController());
         
         int port=29000;
         String serverIP="";
         String[] ips=getAllLocalHostIP();
         for(String ip: ips){
-            System.out.println("local ip : " + ip);
             if(ip.startsWith("192.168.118.")){
                 serverIP=ip;
-//                break;
+                break;
             }
         }
         
         LxqServer server=new LxqServerImpl(serverIP, port);
         
         server.start();
-
         
     }
     
@@ -78,82 +66,11 @@ public class Main {
         
         System.out.println("master");
         
-        Master master=new Master();
+        Master master=new Master(5);
         master.start();
-        
-//        int port=29000;
-////        String serverIP="192.168.118.1";     
-//        String serverIP="192.168.118.128";     
-//        
-//        LxqClient client=new LxqClientImpl(serverIP, port);
-//
-//        System.out.println("==========================================");
-//        
-//        LxqRequest request=new LxqRequestImpl();
-//        
-//        request.setCode(LxqRequest.FIND_CHILD);
-//        request.setNameTest("name test");
-//        
-//        List<String> list=new ArrayList<>();
-//        for(int i=0;i<10;i++){
-//            list.add("item"+i);
-//        }
-//        
-//        request.setInputList(list);
-//        
-//        System.out.println(request);
-//        
-//        client.execute(request);
-//        
-//        LxqResponse response=client.getResponse();
-//
-//        System.out.println("======================");
-//        
-//        System.out.println(response);
-//        
-//        System.out.println("==========================================");
-//        
-//        try {
-//            
-//            File file=new File("res/test0.xml");
-//            BufferedInputStream bis=new BufferedInputStream(new FileInputStream(file));
-//            
-//            int len=0;
-//            byte[] buff=new byte[1024];
-//            StringBuffer sb=new StringBuffer();
-//            while((len=bis.read(buff))!=-1){
-//                sb.append(new String(buff, 0, len));
-//            }
-//            
-//            bis.close();
-//
-//            System.out.println("==========================================");
-//            
-//            request.setCode(LxqRequest.CHUNK);
-//            request.setChunk(sb.toString());
-//
-//            System.out.println(request);
-//            
-//            client.execute(request);
-//            
-//            response=client.getResponse();
-//            
-//            System.out.println("======================");
-//
-//            System.out.println(response);
-//            
-//            System.out.println("==========================================");
-//            
-//            
-//        } catch (Exception e) {
-//            // TODO Auto-generated catch block
-//            e.printStackTrace();
-//        }
-        
+                
     }
     
-
-
     private static String[] getAllLocalHostIP() {  
         List<String> res = new ArrayList<String>();  
         Enumeration<NetworkInterface> netInterfaces;  

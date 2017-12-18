@@ -52,7 +52,33 @@ public enum Axis {
     @Override
     public String toString() {
         // TODO Auto-generated method stub
-        return super.toString().toLowerCase();
+        return super.toString().toLowerCase().replace('_', '-');
     }
 
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

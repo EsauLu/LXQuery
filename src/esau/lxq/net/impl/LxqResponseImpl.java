@@ -7,26 +7,26 @@ import esau.lxq.net.LxqResponse;
 
 public class LxqResponseImpl implements LxqResponse {
 
-    private String type;
+    private String msg;
 
-    private List<String> resultList;    
+    private List<String> resultList;
 
     public LxqResponseImpl() {
         super();
         // TODO Auto-generated constructor stub
-        resultList=new ArrayList<>();
+        resultList = new ArrayList<>();
     }
 
     @Override
-    public void setType(String type) {
+    public void setMsg(String msg) {
         // TODO Auto-generated method stub
-        this.type = type;
+        this.msg = msg;
     }
 
     @Override
-    public String getType() {
+    public String getMsg() {
         // TODO Auto-generated method stub
-        return type;
+        return this.msg;
     }
 
     @Override
@@ -39,7 +39,7 @@ public class LxqResponseImpl implements LxqResponse {
     @Override
     public void setResultList(List<String> resultList) {
         // TODO Auto-generated method stub
-        this.resultList=resultList;
+        this.resultList = resultList;
     }
 
     @Override
@@ -47,19 +47,21 @@ public class LxqResponseImpl implements LxqResponse {
         // TODO Auto-generated method stub
         return this.resultList;
     }
-    
+
     @Override
     public String toString() {
         // TODO Auto-generated method stub
-        
-        StringBuffer sb=new StringBuffer();
-        
-        sb.append(type);
-        sb.append("\n\n");
-                
-        for(String item: resultList){
-            sb.append(item);
-            sb.append("\n");
+
+        StringBuffer sb = new StringBuffer();
+
+        sb.append(msg);
+
+        if (resultList != null && resultList.size() > 0) {
+            sb.append("\n\n");
+            for (String item : resultList) {
+                sb.append(item);
+                sb.append("\n");
+            }
         }
 
         return sb.toString().trim();

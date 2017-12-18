@@ -13,38 +13,37 @@ import esau.lxq.net.impl.LxqRequestImpl;
 
 public class ClientManager {
 
-    private String[] serverIps = { 
-            "192.168.118.128", 
-            "192.168.118.129", 
-//            "192.168.118.130", 
-//            "192.168.118.131",
-//            "192.168.118.132", 
-//            "192.168.118.133", 
-//            "192.168.118.134", 
-//            "192.168.118.135", 
-            };
+    private int clientNum;
+
+    private String[] serverIps = { "192.168.118.128", "192.168.118.129", "192.168.118.130", "192.168.118.131",
+            "192.168.118.132", "192.168.118.133", "192.168.118.134", "192.168.118.135", };
 
     private int port = 29000;
 
     private Map<Integer, LxqClient> clientsMap;
 
     public ClientManager() {
-        super();
         // TODO Auto-generated constructor stub
+    }
+
+    public ClientManager(String[] serverIps, int port) {
+        this.serverIps = serverIps;
+        this.port = port;
     }
 
     public void initClients(List<Integer> pids) {
 
-        pids = new ArrayList<Integer>();
+        clientNum = pids.size();
+
         clientsMap = new HashMap<>();
 
-        for (int i = 0; i < serverIps.length; i++) {
+        for (int i = 0; i < clientNum; i++) {
 
-            pids.add(i);
+            int pid = pids.get(i);
 
             LxqClient client = new LxqClientImpl(serverIps[i], port);
 
-            clientsMap.put(i, client);
+            clientsMap.put(pid, client);
 
         }
 
@@ -64,11 +63,9 @@ public class ClientManager {
         return clientsMap;
     }
 
-    public List<LxqResponse> sendChunks(List<Integer> pids, List<String> chunks) {
+    public void sendChunks(List<Integer> pids, List<String> chunks) {
 
         int p = pids.size();
-
-        List<LxqResponse> responses = new ArrayList<>();
 
         for (int i = 0; i < p; i++) {
 
@@ -76,16 +73,13 @@ public class ClientManager {
             String chunk = chunks.get(i);
             LxqClient client = clientsMap.get(pid);
 
-            LxqResponse response = sendChunk(client, chunk);
-            responses.add(response);
+            sendChunk(client, chunk);
 
         }
 
-        return responses;
-
     }
 
-    public LxqResponse sendChunk(LxqClient client, String chunk) {
+    public void sendChunk(LxqClient client, String chunk) {
 
         LxqRequest request = new LxqRequestImpl();
 
@@ -94,28 +88,28 @@ public class ClientManager {
         request.setChunk(chunk);
 
         client.execute(request);
-
-        return client.getResponse();
-    }
-    
-    public List<LxqResponse> getResponses(List<Integer> pids){
         
+    }
+
+    public List<LxqResponse> getResponses(List<Integer> pids) {
+
         int p = pids.size();
 
         List<LxqResponse> responses = new ArrayList<>();
-        
-        for(int i=0;i<p;i++){
-            int pid=pids.get(i);
+
+        for (int i = 0; i < p; i++) {
+            int pid = pids.get(i);
             responses.add(getResponse(pid));
         }
-        
+
         return responses;
-        
+
     }
-    
-    public LxqResponse getResponse(Integer pid){
-        LxqClient client=clientsMap.get(pid);
-        return client.getResponse();        
+
+    public LxqResponse getResponse(Integer pid) {
+        LxqClient client = clientsMap.get(pid);
+        LxqResponse response = client.getResponse();
+        return response;
     }
 
 }

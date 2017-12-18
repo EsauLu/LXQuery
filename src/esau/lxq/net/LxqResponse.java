@@ -3,10 +3,10 @@ package esau.lxq.net;
 import java.util.List;
 
 public interface LxqResponse {
-
-    public void setType(String type);
     
-    public String getType();
+    public void setMsg(String msg);
+    
+    public String getMsg();
     
     public LxqResponse add(String item);
     

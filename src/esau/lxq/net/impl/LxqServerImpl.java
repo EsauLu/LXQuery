@@ -98,7 +98,7 @@ public class LxqServerImpl implements LxqServer {
         
         StringBuffer sb=new StringBuffer();
         
-        sb.append(response.getType());
+        sb.append(response.getMsg());
         sb.append("\n\n");
         
         for(String item: response.getResultList()){

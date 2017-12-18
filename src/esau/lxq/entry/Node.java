@@ -161,5 +161,54 @@ public class Node {
         // TODO Auto-generated method stub
         return Objects.hash(uid, tagName, type);
     }
+    
+    public String toBfsString(){
+        String s=toString().trim();
+        
+        String chs="";
+        if(childList.size()>0){
+            for(int i=0;i<childList.size()-1;i++){
+                chs+=childList.get(i).toBfsString();
+                chs+=", ";
+            }
+            chs+=childList.get(childList.size()-1).toBfsString();
+            
+            s+=":{"+chs+"}";
+        }
+        
+        return s;
+    }
 
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

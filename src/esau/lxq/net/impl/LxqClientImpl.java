@@ -134,9 +134,6 @@ public class LxqClientImpl implements LxqClient {
             }
         }
 
-        response = new LxqResponseImpl();
-        
-
         return parse(sb);
     }
     
@@ -146,7 +143,7 @@ public class LxqClientImpl implements LxqClient {
         int k=sb.indexOf("\n\n");
         
         String type=sb.substring(0, k);
-        response.setType(type);
+        response.setMsg(type);
         
         String paramsStr=sb.substring(k+2).trim();
         
@@ -155,7 +152,7 @@ public class LxqClientImpl implements LxqClient {
             resultList.add(item);
         }
         response.setResultList(resultList);
-
+        
         return response;
     }
 

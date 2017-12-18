@@ -41,7 +41,7 @@ public class DefaultController implements Controller {
         }
         response.setResultList(resList);
         
-        response.setType("Node");
+        response.setMsg("Node");
         System.out.println("---------------------------------------------");
         
     }
@@ -70,7 +70,7 @@ public class DefaultController implements Controller {
         }
         response.setResultList(resList);
         
-        response.setType("Node");
+        response.setMsg("Node");
         System.out.println("---------------------------------------------");
     }
 
