@@ -5,14 +5,14 @@ import java.util.Objects;
 public class Link {
 
     private int pid;
-    private int uid;
+    private long uid;
 
     public Link() {
         super();
         // TODO Auto-generated constructor stub
     }
 
-    public Link(int pid, int uid) {
+    public Link(int pid, long uid) {
         super();
         this.pid = pid;
         this.uid = uid;
@@ -26,11 +26,11 @@ public class Link {
         this.pid = pid;
     }
 
-    public int getUid() {
+    public long getUid() {
         return uid;
     }
 
-    public void setUid(int uid) {
+    public void setUid(long uid) {
         this.uid = uid;
     }
 

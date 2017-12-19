@@ -53,7 +53,7 @@ public class DefaultController implements Controller {
         
         System.out.println("Code : "+request.getCode());
         
-        System.out.println("Name test : "+request.getNameTest());
+        System.out.println("Name test : "+request.getMsg());
         
         List<String> list=request.getInputList();
         

@@ -6,7 +6,7 @@ import java.util.Objects;
 
 public class Node {
 
-    private int uid;
+    private long uid;
 
     private String tagName;
 
@@ -31,12 +31,33 @@ public class Node {
     public Node() {
         super();
         // TODO Auto-generated constructor stub
+        init();
+    }
+
+    public Node(int uid, String tagName, NodeType type) {
+        super();
+        init();
+        this.uid = uid;
+        this.tagName = tagName;
+        this.type = type;
+    }
+
+    public Node(int uid, String tagName, NodeType type, int start, int end) {
+        super();
+        init();
+        this.uid = uid;
+        this.tagName = tagName;
+        this.type = type;
+        this.start = start;
+        this.end = end;
+    }
+
+    private void init(){
 
         this.type = NodeType.CLOSED_NODE;
         this.childList = new ArrayList<Node>();
-
     }
-
+    
     public int getStart() {
         return start;
     }
@@ -61,11 +82,11 @@ public class Node {
         this.isChecked = isChecked;
     }
 
-    public int getUid() {
+    public long getUid() {
         return uid;
     }
 
-    public void setUid(int uid) {
+    public void setUid(long uid) {
         this.uid = uid;
     }
 
@@ -125,6 +146,90 @@ public class Node {
         this.depth = depth;
     }
 
+    public int getChildNum() {
+        return childList.size();
+    }
+
+    public void addLastChild(Node child) {
+        childList.add(child);
+    }
+
+    public void addFirstChild(Node child) {
+        childList.add(0, child);
+    }
+
+    public void addChildByIndex(int index, Node child) {
+        childList.add(index, child);
+    }
+
+    public Node getChildByIndex(int index) {
+        if (index < 0 || index >= childList.size()) {
+            return null;
+        }
+        return childList.get(index);
+    }
+
+    public Node getFirstChild() {
+        if (childList.size() == 0) {
+            return null;
+        }
+        return childList.get(0);
+    }
+
+    public Node getLastChild() {
+        if (childList.size() == 0) {
+            return null;
+        }
+        return childList.get(childList.size() - 1);
+    }
+
+    public boolean isLeftOpenNode() {
+        return NodeType.LEFT_OPEN_NODE.equals(type);
+    }
+
+    public boolean isRightOpenNode() {
+        return NodeType.RIGHT_OPEN_NODE.equals(type);
+    }
+
+    public boolean isPreOpenNode() {
+        return NodeType.PRE_NODE.equals(type);
+    }
+
+    public boolean isClosedNode() {
+        return NodeType.CLOSED_NODE.equals(type);
+    }
+
+    public String toText() {
+        return uid + " " + tagName + " " + type + " " + start + " " + end;
+    }
+
+    public static Node parse(String text) {
+
+        String[] fileds = text.trim().split(" ");
+
+        if (fileds.length == 5) {
+
+            try {
+
+                int uid = Integer.parseInt(fileds[0]);
+                String tagName = fileds[1];
+                NodeType type = NodeType.valueOf(fileds[2]);
+                int start = Integer.parseInt(fileds[3]);
+                int end = Integer.parseInt(fileds[4]);
+                Node node=new Node(uid, tagName, type, start, end);
+                return node;
+
+            } catch (Exception e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+
+        }
+
+        return null;
+
+    }
+
     @Override
     public String toString() {
         if (NodeType.CLOSED_NODE.equals(type)) {
@@ -161,54 +266,22 @@ public class Node {
         // TODO Auto-generated method stub
         return Objects.hash(uid, tagName, type);
     }
-    
-    public String toBfsString(){
-        String s=toString().trim();
-        
-        String chs="";
-        if(childList.size()>0){
-            for(int i=0;i<childList.size()-1;i++){
-                chs+=childList.get(i).toBfsString();
-                chs+=", ";
+
+    public String toBfsString() {
+        String s = toString().trim();
+
+        String chs = "";
+        if (childList.size() > 0) {
+            for (int i = 0; i < childList.size() - 1; i++) {
+                chs += childList.get(i).toBfsString();
+                chs += ", ";
             }
-            chs+=childList.get(childList.size()-1).toBfsString();
-            
-            s+=":{"+chs+"}";
+            chs += childList.get(childList.size() - 1).toBfsString();
+
+            s += ":{" + chs + "}";
         }
-        
+
         return s;
     }
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

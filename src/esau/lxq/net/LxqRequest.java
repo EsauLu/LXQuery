@@ -3,6 +3,8 @@ package esau.lxq.net;
 import java.util.List;
 
 public interface LxqRequest {
+    
+    public static final int NONE=-1;
 
     public static final int CHUNK = 100;
     
@@ -11,14 +13,20 @@ public interface LxqRequest {
     public static final int RIGHT_OPEN_NODES=102;
     
     public static final int FIND_CHILD=109;
+    
+    public static final int COMPUTE_PREPATH=110;
+
+    public static final int COMPUTE_RANGS=111;
+    
+    public static final int GET_ROOT=112;
 
     public void setCode(int code);
 
     public int getCode();
 
-    public void setNameTest(String test);
+    public void setMsg(String msg);
 
-    public String getNameTest();
+    public String getMsg();
 
     public void setInputList(List<String> inputList);
 
@@ -27,5 +35,7 @@ public interface LxqRequest {
     public void setChunk(String chunk);
 
     public String getChunk();
+    
+    public String toMsgText();
 
 }

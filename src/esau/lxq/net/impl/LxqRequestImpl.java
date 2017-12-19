@@ -9,7 +9,7 @@ public class LxqRequestImpl implements LxqRequest {
 
     private int code;
 
-    private String nameTest;
+    private String msg;
 
     private List<String> inputList;
 
@@ -28,15 +28,15 @@ public class LxqRequestImpl implements LxqRequest {
     }
 
     @Override
-    public void setNameTest(String test) {
+    public void setMsg(String test) {
         // TODO Auto-generated method stub
-        this.nameTest = test;
+        this.msg = test;
     }
 
     @Override
-    public String getNameTest() {
+    public String getMsg() {
         // TODO Auto-generated method stub
-        return nameTest;
+        return msg;
     }
 
     @Override
@@ -85,7 +85,7 @@ public class LxqRequestImpl implements LxqRequest {
             k=paramsStr.indexOf("\n\n");
             
             String nameTest=paramsStr.substring(0, k);
-            request.setNameTest(nameTest);
+            request.setMsg(nameTest);
             
             String inputListStr=paramsStr.substring(k+2).trim();
             List<String> inputList=new ArrayList<String>();
@@ -112,13 +112,44 @@ public class LxqRequestImpl implements LxqRequest {
             sb.append(chunk);
         }else{
             
-            sb.append(nameTest);
-            sb.append("\n\n");
+            sb.append(msg);
             
-            for(String item: inputList){
-                sb.append(item);
-                sb.append("\n");
+            if(inputList!=null&&inputList.size()>0){
+                sb.append("\n\n");                
+                for(String item: inputList){
+                    sb.append(item);
+                    sb.append("\n");
+                }
             }
+            
+        }
+        
+        return sb.toString().trim();
+        
+    }
+    
+    @Override
+    public String toMsgText() {
+        // TODO Auto-generated method stub
+        StringBuffer sb=new StringBuffer();
+        sb.append(code);
+        sb.append("\n\n");
+        sb.append(msg);
+        sb.append("\n\n");  
+        
+        if(code==CHUNK){
+            sb.append(chunk);
+        }else{
+              
+            if(inputList!=null&&inputList.size()>0){            
+                for(String item: inputList){
+                    sb.append(item);
+                    sb.append("\n");
+                }
+            }else{
+                sb.append("null");
+            }
+            
         }
         
         return sb.toString().trim();

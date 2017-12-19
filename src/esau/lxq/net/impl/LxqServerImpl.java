@@ -95,18 +95,7 @@ public class LxqServerImpl implements LxqServer {
     private void print(OutputStream out, LxqResponse response) throws Exception {
         
         BufferedOutputStream bos=new BufferedOutputStream(out);
-        
-        StringBuffer sb=new StringBuffer();
-        
-        sb.append(response.getMsg());
-        sb.append("\n\n");
-        
-        for(String item: response.getResultList()){
-            sb.append(item);
-            sb.append("\n");
-        }
-
-        bos.write(sb.toString().trim().getBytes());
+        bos.write(response.toMsgText().getBytes());
         bos.flush();
         
     }
@@ -130,13 +119,29 @@ public class LxqServerImpl implements LxqServer {
         LxqRequest request = new LxqRequestImpl();
         
         int k=sb.indexOf("\n\n");
+        int code=LxqRequest.NONE;
         
+        if(k==-1){          
+            try {
+                code=Integer.parseInt(sb.toString().trim());
+            } catch (NumberFormatException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+            request.setCode(code);
+            return request;
+        }
+
         String codeStr=sb.substring(0, k);
-        
-        int code=Integer.parseInt(codeStr);
-        request.setCode(Integer.parseInt(codeStr));
+        code=Integer.parseInt(codeStr);
+        request.setCode(code);
         
         String paramsStr=sb.substring(k+2);
+        
+        k=paramsStr.indexOf("\n\n");
+        if(k!=-1){
+            request.setMsg(paramsStr.substring(0, k));
+        }
         
         if(code==LxqRequest.CHUNK){
 
@@ -144,17 +149,17 @@ public class LxqServerImpl implements LxqServer {
             
         }else{
             
-            k=paramsStr.indexOf("\n\n");
-            
-            String nameTest=paramsStr.substring(0, k);
-            request.setNameTest(nameTest);
-            
-            String inputListStr=paramsStr.substring(k+2).trim();
-            List<String> inputList=new ArrayList<String>();
-            for(String item: inputListStr.split("\n")){
-                inputList.add(item);
-            }
-            request.setInputList(inputList);
+            if(k!=-1){
+                String nameTest=paramsStr.substring(0, k);
+                request.setMsg(nameTest);
+                
+                String inputListStr=paramsStr.substring(k+2).trim();
+                List<String> inputList=new ArrayList<String>();
+                for(String item: inputListStr.split("\n")){
+                    inputList.add(item);
+                }
+                request.setInputList(inputList);
+            }            
             
         }
         

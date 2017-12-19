@@ -1,5 +1,7 @@
 package esau.lxq.service;
 
+import java.util.List;
+
 import esau.lxq.net.Controller;
 import esau.lxq.net.LxqRequest;
 import esau.lxq.net.LxqResponse;
@@ -7,13 +9,11 @@ import esau.lxq.net.LxqResponse;
 public class ControllerImpl implements Controller {
 
     private Worker worker = new Worker();
-    
+
     public ControllerImpl() {
-        
+
         super();
-        
-        System.out.println("-- ControllerImpl --");
-        
+
     }
 
     @Override
@@ -21,35 +21,65 @@ public class ControllerImpl implements Controller {
         // TODO Auto-generated method stub
 
         int code = request.getCode();
+        String msg = request.getMsg();
 
         System.out.println("---------------------------------");
         System.out.println();
         System.out.println(request);
         System.out.println();
-        System.out.println("---------------------------------");
+        System.out.println("---------------------------------"+msg);
 
         switch (code) {
         case LxqRequest.CHUNK:
-            
-            String chunk=request.getChunk();
-            worker.buildSubtrees(chunk);
-            
+
+            String chunk = request.getChunk();
+            worker.buildSubtrees(msg, chunk);
+
             response.setMsg("Subtrees");
             response.setResultList(worker.getSubTreesResponse());
 
             break;
-            
+
         case LxqRequest.LEFT_OPEN_NODES:
-            
+
             response.setMsg("Left open nodes");
             response.setResultList(worker.selectLeftOpenNode());
 
             break;
-            
+
         case LxqRequest.RIGHT_OPEN_NODES:
-            
+
             response.setMsg("Right open nodes");
             response.setResultList(worker.selectRightOpenNode());
+
+            break;
+
+        case LxqRequest.COMPUTE_PREPATH:
+
+            List<String> auxList = request.getInputList();
+
+            long uid = worker.computePrePath(msg, auxList);
+
+            response.setMsg(String.valueOf(uid));
+            response.setResultList(auxList);
+
+            break;
+
+        case LxqRequest.COMPUTE_RANGS:
+
+            List<String> rangsList = request.getInputList();
+            
+            worker.computRangs(rangsList);
+            
+            response.setMsg("Open nodes");
+            response.setResultList(worker.getOpenNodes());
+
+            break;
+
+        case LxqRequest.GET_ROOT:
+            
+            response.setMsg("ROOT");
+            response.setResultList(worker.getRoot());
 
             break;
 
@@ -60,11 +90,11 @@ public class ControllerImpl implements Controller {
         default:
             break;
         }
-        
+
         System.out.println();
         System.out.println(response);
         System.out.println();
-        
+
         System.out.println("======================================");
 
     }

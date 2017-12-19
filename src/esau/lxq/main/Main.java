@@ -66,7 +66,7 @@ public class Main {
         
         System.out.println("master");
         
-        Master master=new Master(5);
+        Master master=new Master(3);
         master.start();
                 
     }

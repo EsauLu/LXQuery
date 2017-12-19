@@ -11,7 +11,7 @@ public class PartialTree {
 
     private int pid;
 
-    private Map<Integer, Node> nodeMap;
+    private Map<Long, Node> nodeMap;
 
     private Node root;
     
@@ -27,7 +27,7 @@ public class PartialTree {
         nodeMap = new HashMap<>();
     }
 
-    public Map<Integer, Node> getNodeMap() {
+    public Map<Long, Node> getNodeMap() {
         return nodeMap;
     }
 
@@ -55,7 +55,7 @@ public class PartialTree {
         this.preOpenNodes = preOpenNodes;
     }
 
-    public void setNodeMap(Map<Integer, Node> nodeMap) {
+    public void setNodeMap(Map<Long, Node> nodeMap) {
         this.nodeMap = nodeMap;
     }
 
@@ -65,7 +65,6 @@ public class PartialTree {
 
     public void setRoot(Node root) {
         this.root = root;
-        bfs();
     }
 
     public int getPid() {
@@ -76,7 +75,7 @@ public class PartialTree {
         this.pid = pid;
     }
 
-    public Node findNodeByUid(int uid) {
+    public Node findNodeByUid(long uid) {
         Node target = nodeMap.get(uid);
         return target;
     }
@@ -326,7 +325,7 @@ public class PartialTree {
 
     }
 
-    public List<Node> findNodesByUid(List<Integer> uids) {
+    public List<Node> findNodesByUid(List<Long> uids) {
 
         List<Node> outputList = new ArrayList<Node>();
 
@@ -359,19 +358,23 @@ public class PartialTree {
 
     private void setIsChecked(boolean isChecked) {
 
-        for (Integer uid : nodeMap.keySet()) {
+        for (Long uid : nodeMap.keySet()) {
             Node node = nodeMap.get(uid);
             node.setChecked(isChecked);
         }
 
     }
 
-    private void bfs() {
+    public void update() {
 
-        if (root == null) {
+        if (this.root == null) {
             return;
         }
+        
+        nodeMap.clear();
+        
         root.setDepth(0);
+        nodeMap.put(root.getUid(), root);
 
         Deque<Node> que = new ArrayDeque<>();
         que.addLast(root);

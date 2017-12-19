@@ -71,27 +71,68 @@ public class ClientManager {
 
             Integer pid = pids.get(i);
             String chunk = chunks.get(i);
-            LxqClient client = clientsMap.get(pid);
 
-            sendChunk(client, chunk);
+            sendChunk(pid, chunk);
 
         }
-
+        
+        getResponseList(pids);
     }
 
-    public void sendChunk(LxqClient client, String chunk) {
+    public void sendChunk(int pid, String chunk) {
 
         LxqRequest request = new LxqRequestImpl();
+        
+        LxqClient client=clientsMap.get(pid);
 
         request.setCode(LxqRequest.CHUNK);
+        
+        request.setMsg(String.valueOf(pid));
 
         request.setChunk(chunk);
 
         client.execute(request);
         
     }
+    
+    public LxqResponse sendRequestByLock(int pid, LxqRequest request){
+        sendRequest(pid, request);
+        return getResponse(pid);
+    }
+    
+    public void sendRequest(int pid, LxqRequest request){
+        LxqClient client=clientsMap.get(pid);
+        client.execute(request);        
+    }
+    
+    public void sendRequests(LxqRequest request){
+        for(Integer pid: clientsMap.keySet()){
+            sendRequest(pid, request);
+        }
+    }
+    
+    public void sendRequests(Map<Integer, LxqRequest> requests){
+        for(Integer pid: requests.keySet()){
+            sendRequest(pid, requests.get(pid));
+        }
+    }
+    
+    public Map<Integer, LxqResponse> getResponseMap(List<Integer> pids){
 
-    public List<LxqResponse> getResponses(List<Integer> pids) {
+        int p = pids.size();
+
+        Map<Integer, LxqResponse> responses = new HashMap<>();
+
+        for (int i = 0; i < p; i++) {
+            int pid = pids.get(i);
+            responses.put(pid, getResponse(pid));
+        }
+
+        return responses;
+
+    }
+
+    public List<LxqResponse> getResponseList(List<Integer> pids) {
 
         int p = pids.size();
 

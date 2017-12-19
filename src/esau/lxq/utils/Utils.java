@@ -212,20 +212,20 @@ public class Utils {
         System.out.println();
 
     }
-    
+
     public static void print(List<List<Node>> results) {
 
-        if(results==null) {
+        if (results == null) {
             System.out.println("null list");
             return;
         }
-        
+
         System.out.println();
         int p = results.size();
         for (int j = 0; j < p; j++) {
             List<Node> result = results.get(j);
             System.out.print("  pt" + j + " : ");
-            if (result==null) {
+            if (result == null) {
                 System.out.println("null pt");
                 continue;
             }
@@ -240,20 +240,19 @@ public class Utils {
 
     }
 
-    
     public static void printPNodeList(List<List<PNode>> results) {
 
-        if(results==null) {
+        if (results == null) {
             System.out.println("null list");
             return;
         }
-        
+
         System.out.println();
         int p = results.size();
         for (int j = 0; j < p; j++) {
             List<PNode> result = results.get(j);
             System.out.print("  pt" + j + " : ");
-            if (result==null) {
+            if (result == null) {
                 System.out.println("null pt");
                 continue;
             }
@@ -268,5 +267,11 @@ public class Utils {
 
     }
 
+    public static void printNods(List<Node> list) {
+        for (Node node : list) {
+            System.out.println(node);
+        }
+        System.out.println();
+    }
 
 }
