@@ -121,6 +121,10 @@ public class Worker {
 
             while (p != null) {
 
+                if(p.isClosedNode()) {
+                    p.setStart(pid);
+                    p.setEnd(pid);
+                }
                 if (p.isChecked() == false) {
                     p.setUid(uid++);
                 }

@@ -1,5 +1,6 @@
 package esau.lxq.service;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -10,35 +11,37 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.sun.org.apache.bcel.internal.generic.NEW;
+
 import esau.lxq.entry.Node;
 import esau.lxq.net.LxqRequest;
 import esau.lxq.net.LxqResponse;
 import esau.lxq.net.impl.LxqRequestImpl;
 
 public class PartialTreeBuilder {
-    
-    private int workerNum=0;
-    
+
+    private int workerNum = 0;
+
     private List<Integer> pidList;
-    
+
     private ClientManager clientManager;
 
     public PartialTreeBuilder(int workerNum, List<Integer> pidList, ClientManager clientManager) {
         super();
-        this.workerNum=workerNum;
-        this.pidList=pidList;
+        this.workerNum = workerNum;
+        this.pidList = pidList;
         this.clientManager = clientManager;
     }
-    
 
     public List<LxqResponse> build() {
 
-        String xmlDocPath = "res/test0.xml";
+        // String xmlDocPath = "res/test0.xml";
+        String xmlDocPath = "res/test2.xml";
 
         dispatchXMLDocument(xmlDocPath);
 
         getPrePath();
-        
+
         LxqRequest request = new LxqRequestImpl();
 
         List<List<Node>> lls = selectLeftOpenNodes();
@@ -62,30 +65,30 @@ public class PartialTreeBuilder {
             }
         }
 
-        Map<Integer, List<Node>> inputs=new HashMap<>();
+        Map<Integer, List<Node>> inputs = new HashMap<>();
         for (Node node : rangsMap.values()) {
-            int st=node.getStart();
-            int ed=node.getEnd();
-            for(int pid=st; pid<=ed; pid++){
-                List<Node> list=inputs.get(pid);
-                if(list==null){
-                    list=new ArrayList<>();
+            int st = node.getStart();
+            int ed = node.getEnd();
+            for (int pid = st; pid <= ed; pid++) {
+                List<Node> list = inputs.get(pid);
+                if (list == null) {
+                    list = new ArrayList<>();
                     inputs.put(pid, list);
                 }
                 list.add(node);
             }
         }
-        
+
         request.setCode(LxqRequest.COMPUTE_RANGS);
-        for(int pid: pidList){
-            List<Node> list=inputs.get(pid);
-            if(list==null){
+        for (int pid : pidList) {
+            List<Node> list = inputs.get(pid);
+            if (list == null) {
                 continue;
             }
             request.setInputList(ListUtils.convertNodeList(list));
             clientManager.sendRequest(pid, request);
         }
-        
+
         return clientManager.getResponseList(pidList);
 
     }
@@ -155,10 +158,6 @@ public class PartialTreeBuilder {
     private void dispatchXMLDocument(String xmlDocPath) {
 
         StringBuffer xml = readXMLDocument(xmlDocPath);
-
-        xml.insert(0, "<root>");
-        xml.append("</root>");
-
         List<String> chunks = getChunks(xml);
 
         clientManager.sendChunks(pidList, chunks);
@@ -174,6 +173,14 @@ public class PartialTreeBuilder {
         List<String> chunks = new ArrayList<>();
         for (int i = 0; i < workerNum; i++) {
             String chunk = xml.substring(pos[i], pos[i + 1]);
+            if (i == 0) {
+                chunk = "<root>" + chunk;
+            }
+            if (i == workerNum - 1) {
+                chunk += "</root>";
+            }
+            System.out.println(chunk);
+            System.out.println("------");
             chunks.add(chunk);
         }
 
@@ -193,12 +200,13 @@ public class PartialTreeBuilder {
 
         try {
 
-            reader = new BufferedReader(new InputStreamReader(new FileInputStream(file)));
-            String line = "";
-            while ((line = reader.readLine()) != null) {
-                xml.append(line);
-                xml.append("\n");
+            BufferedInputStream bis = new BufferedInputStream(new FileInputStream(file));
+            int len = 0;
+            byte[] buff = new byte[8092];
+            while ((len = bis.read(buff)) != -1) {
+                xml.append(new String(buff, 0, len));
             }
+            bis.close();
 
         } catch (Exception e) {
             // TODO Auto-generated catch block

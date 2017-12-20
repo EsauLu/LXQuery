@@ -127,7 +127,32 @@ public class ControllerImpl implements Controller {
             List<String> inputList=request.getInputList();
             List<Node> resultList=pt.findCorrespondingNodes(ListUtils.recoverNodeList(inputList));
             
-            response.setMsg("childs");
+            response.setMsg("Share nodes");
+            response.setResultList(ListUtils.convertNodeList(resultList));
+            
+            break;
+        }
+
+        case LxqRequest.FIND_FOLLOWING_SIBLING:{       
+            PartialTree pt=worker.getPartialTree();
+            
+            List<String> inputList=request.getInputList();
+            List<Node> resultList=pt.findFolSibNodes(ListUtils.recoverNodeList(inputList), msg);
+            
+            response.setMsg("following sibling");
+            response.setResultList(ListUtils.convertNodeList(resultList));
+            
+            break;
+        }
+
+        case LxqRequest.FIND_NODES_BY_UID:{       
+            PartialTree pt=worker.getPartialTree();
+            
+            List<String> inputList=request.getInputList();
+            
+            List<Node> resultList=pt.findNodesByUid(ListUtils.recoverNodeList(inputList));
+            
+            response.setMsg("Nodes");
             response.setResultList(ListUtils.convertNodeList(resultList));
             
             break;

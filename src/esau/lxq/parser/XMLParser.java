@@ -39,12 +39,12 @@ public class XMLParser {
 
                 if (node.getTagName().equals(tag.getName())) {
                     stack.pop();
-                    stack.peek().getChildList().add(node);
+                    stack.peek().addLastChild(node);
                 } else {
                     Node temNode = NodeFactory.createNode(tag.getName(), NodeType.LEFT_OPEN_NODE, tag.getTid());
-                    temNode.getChildList().addAll(node.getChildList());
-                    node.setChildList(new ArrayList<Node>());
-                    node.getChildList().add(temNode);
+                    temNode.addChilds(node.getAllChilds());
+                    node.clearChilds();
+                    node.addLastChild(temNode);
                 }
 
             }
@@ -53,10 +53,10 @@ public class XMLParser {
         while (stack.size() > 1) {
             Node node = stack.pop();
             node.setType(NodeType.RIGHT_OPEN_NODE);
-            stack.peek().getChildList().add(node);
+            stack.peek().addLastChild(node);
         }
 
-        return stack.pop().getChildList();
+        return stack.pop().getAllChilds();
     }
 
     public static List<Tag> getTagsByXML(String chunk) {

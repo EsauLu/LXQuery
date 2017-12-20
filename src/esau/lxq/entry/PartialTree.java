@@ -14,11 +14,11 @@ public class PartialTree {
     private Map<Long, Node> nodeMap;
 
     private Node root;
-    
+
     private List<Integer> leftOpenNodes;
-    
+
     private List<Integer> rightOpenNodes;
-    
+
     private List<Integer> preOpenNodes;
 
     public PartialTree() {
@@ -87,8 +87,9 @@ public class PartialTree {
         for (int i = 0; i < inputList.size(); i++) {
             Node inputNode = inputList.get(i);
             Node originNode = nodeMap.get(inputNode.getUid());
-            for (Node ch : originNode.getChildList()) {
-                if (ch.getTagName().equals(test)) {
+            for (int j = 0; j < originNode.getChildNum(); j++) {
+                Node ch = originNode.getChildByIndex(j);
+                if (checkNameTest(test, ch)) {
                     outputList.add(ch);
                 }
             }
@@ -106,8 +107,9 @@ public class PartialTree {
             PNode inputPNode = inputList.get(i);
             Node inputNode = inputPNode.getNode();
             Node originNode = nodeMap.get(inputNode.getUid());
-            for (Node ch : originNode.getChildList()) {
-                if (ch.getTagName().equals(test)) {
+            for (int j = 0; j < originNode.getChildNum(); j++) {
+                Node ch = originNode.getChildByIndex(j);
+                if (checkNameTest(test, ch)) {
                     PNode pNode = new PNode();
                     pNode.setNode(ch);
                     pNode.setLink(inputPNode.getLink());
@@ -141,10 +143,9 @@ public class PartialTree {
                     continue;
                 }
                 nt.setChecked(true);
-                List<Node> childList = nt.getChildList();
-                for (int j = 0; j < childList.size(); j++) {
-                    Node ch = childList.get(j);
-                    if (ch.getTagName().equals(test)) {
+                for (int j = 0; j < nt.getChildNum(); j++) {
+                    Node ch = nt.getChildByIndex(j);
+                    if (checkNameTest(test, ch)) {
                         outputList.add(ch);
                     }
                     stack.push(ch);
@@ -175,14 +176,13 @@ public class PartialTree {
 
             while (!stack.isEmpty()) {
                 Node nt = stack.pop();
-//                if (nt.isChecked()) {
-//                    continue;
-//                }
+                // if (nt.isChecked()) {
+                // continue;
+                // }
                 nt.setChecked(true);
-                List<Node> childList = nt.getChildList();
-                for (int j = 0; j < childList.size(); j++) {
-                    Node ch = childList.get(j);
-                    if (ch.getTagName().equals(test)) {
+                for (int j = 0; j < nt.getChildNum(); j++) {
+                    Node ch = nt.getChildByIndex(j);
+                    if (checkNameTest(test, ch)) {
                         PNode pNode = new PNode();
                         pNode.setNode(ch);
                         pNode.setLink(inputPNode.getLink());
@@ -208,7 +208,7 @@ public class PartialTree {
             }
 
             Node parent = node.getParent();
-            if (parent != null && parent.getTagName().equals(test)) {
+            if (parent != null && checkNameTest(test, parent)) {
                 outputList.add(parent);
             }
 
@@ -229,7 +229,7 @@ public class PartialTree {
             }
 
             Node parent = node.getParent();
-            if (parent != null && parent.getTagName().equals(test)) {
+            if (parent != null && checkNameTest(test, parent)) {
                 outputList.add(new PNode(parent, inputPNode.getLink()));
             }
 
@@ -275,14 +275,15 @@ public class PartialTree {
 
         for (int i = 0; i < inputList.size(); i++) {
 
-            Node node = inputList.get(i);
+            Node tem = inputList.get(i);
+            Node node = nodeMap.get(tem.getUid());
 
             while (!node.isChecked() && node.getFlosib() != null) {
 
                 node.setChecked(true);
                 node = node.getFlosib();
 
-                if (node.getTagName().equals(test)) {
+                if (checkNameTest(test, node)) {
                     outputList.add(node);
                 }
 
@@ -303,14 +304,15 @@ public class PartialTree {
         for (int i = 0; i < inputList.size(); i++) {
 
             PNode inputPNode = inputList.get(i);
-            Node node = inputPNode.getNode();
+            Node tem = inputPNode.getNode();
+            Node node = nodeMap.get(tem.getUid());
 
             while (!node.isChecked() && node.getFlosib() != null) {
 
                 node.setChecked(true);
                 node = node.getFlosib();
 
-                if (node.getTagName().equals(test)) {
+                if (checkNameTest(test, node)) {
                     PNode pNode = new PNode();
                     pNode.setNode(node);
                     pNode.setLink(inputPNode.getLink());
@@ -325,12 +327,12 @@ public class PartialTree {
 
     }
 
-    public List<Node> findNodesByUid(List<Long> uids) {
+    public List<Node> findNodesByUid(List<Node> uids) {
 
         List<Node> outputList = new ArrayList<Node>();
 
         for (int i = 0; i < uids.size(); i++) {
-            Node node = nodeMap.get(uids.get(i));
+            Node node = nodeMap.get(uids.get(i).getUid());
             if (node != null) {
                 outputList.add(node);
             }
@@ -365,14 +367,22 @@ public class PartialTree {
 
     }
 
+    public boolean checkNameTest(String test, Node node) {
+        if (test.trim().equals("*")) {
+            return true;
+        }
+        return node.getTagName().equals(test.trim());
+    }
+
     public void update() {
 
         if (this.root == null) {
             return;
         }
-        
+
         nodeMap.clear();
-        
+
+        // root.setStart(pid);
         root.setDepth(0);
         nodeMap.put(root.getUid(), root);
 
@@ -388,7 +398,14 @@ public class PartialTree {
             }
 
             Node presib = null;
-            for (Node nd : node.getChildList()) {
+            for (int i = 0; i < node.getChildNum(); i++) {
+                Node nd = node.getChildByIndex(i);
+                if (i > 0) {
+                    nd.setPresib(node.getChildByIndex(i - 1));
+                }
+                if (i < node.getChildNum() - 1) {
+                    nd.setFlosib(node.getChildByIndex(i + 1));
+                }
                 que.addLast(nd);
                 nd.setDepth(node.getDepth() + 1);
                 nd.setParent(node);

@@ -439,7 +439,7 @@ public class PQueryExecutor {
         for (int i = 0; i < p; i++) {
             PartialTree pt = pts.get(i);
             List<Long> uids = uidLists.get(i);
-            resultLists.add(pt.findNodesByUid(uids));
+//            resultLists.add(pt.findNodesByUid(uids));
         }
 
 //        return QueryExecutor.shareNodes(pts, resultLists);

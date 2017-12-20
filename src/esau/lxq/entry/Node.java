@@ -34,7 +34,7 @@ public class Node {
         init();
     }
 
-    public Node(int uid, String tagName, NodeType type) {
+    public Node(long uid, String tagName, NodeType type) {
         super();
         init();
         this.uid = uid;
@@ -42,7 +42,7 @@ public class Node {
         this.type = type;
     }
 
-    public Node(int uid, String tagName, NodeType type, int start, int end) {
+    public Node(long uid, String tagName, NodeType type, int start, int end) {
         super();
         init();
         this.uid = uid;
@@ -122,13 +122,13 @@ public class Node {
         this.flosib = flosib;
     }
 
-    public List<Node> getChildList() {
-        return childList;
-    }
-
-    public void setChildList(List<Node> childList) {
-        this.childList = childList;
-    }
+//    public List<Node> getChildList() {
+//        return childList;
+//    }
+//
+//    public void setChildList(List<Node> childList) {
+//        this.childList = childList;
+//    }
 
     public String getTagName() {
         return tagName;
@@ -161,6 +161,14 @@ public class Node {
     public void addChildByIndex(int index, Node child) {
         childList.add(index, child);
     }
+    
+    public void addChilds(List<Node> childs) {
+        childList.addAll(childs);
+    }
+    
+    public List<Node> getAllChilds(){
+        return this.childList;
+    }
 
     public Node getChildByIndex(int index) {
         if (index < 0 || index >= childList.size()) {
@@ -181,6 +189,10 @@ public class Node {
             return null;
         }
         return childList.get(childList.size() - 1);
+    }
+    
+    public void clearChilds() {
+        childList.clear();
     }
 
     public boolean isLeftOpenNode() {

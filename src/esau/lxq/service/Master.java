@@ -23,8 +23,8 @@ public class Master {
     private String[] xpaths = {
             // "/descendant::A[descendant::B/descendant::C/parent::B]/following-sibling::B[descendant::B/descendant::C[descendant::G/descendant::H/parent::I]/parent::B]",
             "/child::A/descendant::B/descendant::C",
-            // "/child::A/descendant::B/descendant::C/parent::B",
-            // "/descendant::B/following-sibling::B",
+             "/child::A/descendant::B/descendant::C/parent::B",
+             "/descendant::B/following-sibling::B",
             // "/descendant::B[following-sibling::B/child::C]/child::C",
             // "/descendant::D[parent::B[descendant::E]]"
     };

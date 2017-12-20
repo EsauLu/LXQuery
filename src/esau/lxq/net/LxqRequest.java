@@ -23,10 +23,12 @@ public interface LxqRequest {
     public static final int FIND_DESCENDANT = 113;
 
     public static final int FIND_PARENT = 114;
-    
+
     public static final int FIND_FOLLOWING_SIBLING=115;
+
+    public static final int FIND_NODES_BY_UID=116;
     
-    public static final int SHARE_NODES=116;
+    public static final int SHARE_NODES=117;
 
     public void setCode(int code);
 

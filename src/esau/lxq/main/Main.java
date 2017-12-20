@@ -31,7 +31,7 @@ public class Main {
             
             while(k==1){
                 master();
-                System.out.println("continue? 1/0");
+                System.out.println("Exit? 1/0");
                 k=scn.nextInt();
             }
         }else{
@@ -66,7 +66,7 @@ public class Main {
         
         System.out.println("master");
         
-        Master master=new Master(3);
+        Master master=new Master(5);
         master.start();
                 
     }

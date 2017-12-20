@@ -8,6 +8,7 @@ import java.util.List;
 import esau.lxq.entry.Node;
 import esau.lxq.entry.NodeType;
 import esau.lxq.entry.PNode;
+import esau.lxq.entry.RemoteNode;
 
 public class Utils {
 
@@ -17,9 +18,11 @@ public class Utils {
             return;
         }
 
-        List<Node> list = root.getChildList();
+//        List<Node> list = root.getChildList();
 
-        for (Node ch : list) {
+        for (int i=0;i<root.getChildNum();i++) {
+            
+            Node ch=root.getChildByIndex(i);
 
             Deque<Node> que = new ArrayDeque<>();
             que.addLast(ch);
@@ -36,8 +39,8 @@ public class Utils {
                     System.out.print(s + " ");
                 }
 
-                for (Node nd : node.getChildList()) {
-                    que.addLast(nd);
+                for (int j=0;j<node.getChildNum();j++) {
+                    que.addLast(node.getChildByIndex(j));
                 }
 
             }
@@ -74,8 +77,8 @@ public class Utils {
                     System.out.print(s + " ");
                 }
 
-                for (Node nd : node.getChildList()) {
-                    que.addLast(nd);
+                for (int j=0;j<node.getChildNum();j++) {
+                    que.addLast(node.getChildByIndex(j));
                 }
 
             }
@@ -92,10 +95,10 @@ public class Utils {
             return;
         }
 
-        List<Node> list = root.getChildList();
-
-        for (Node ch : list) {
-
+        for (int i=0;i<root.getChildNum();i++) {
+            
+            Node ch=root.getChildByIndex(i);
+            
             Deque<Node> que = new ArrayDeque<>();
             que.addLast(ch);
 
@@ -111,9 +114,10 @@ public class Utils {
                     System.out.print(s + "(" + node.getStart() + ", " + node.getEnd() + ") ");
                 }
 
-                for (Node nd : node.getChildList()) {
-                    que.addLast(nd);
+                for (int j=0;j<node.getChildNum();j++) {
+                    que.addLast(node.getChildByIndex(j));
                 }
+
 
             }
 
@@ -129,9 +133,9 @@ public class Utils {
             return;
         }
 
-        List<Node> list = root.getChildList();
-
-        for (Node ch : list) {
+        for (int i=0;i<root.getChildNum();i++) {
+            
+            Node ch=root.getChildByIndex(i);
 
             Deque<Node> que = new ArrayDeque<>();
             que.addLast(ch);
@@ -144,9 +148,10 @@ public class Utils {
                 s = s.substring(0, s.length() - 1);
                 System.out.print(s + "(" + node.getDepth() + ") ");
 
-                for (Node nd : node.getChildList()) {
-                    que.addLast(nd);
+                for (int j=0;j<node.getChildNum();j++) {
+                    que.addLast(node.getChildByIndex(j));
                 }
+
 
             }
 
@@ -158,9 +163,9 @@ public class Utils {
 
     public static void dfsWithDepth(Node root) {
 
-        List<Node> list = root.getChildList();
-
-        for (Node ch : list) {
+        for (int i=0;i<root.getChildNum();i++) {
+            
+            Node ch=root.getChildByIndex(i);
 
             Deque<Node> stack = new ArrayDeque<Node>();
             stack.push(ch);
@@ -172,9 +177,8 @@ public class Utils {
                 s = s.substring(0, s.length() - 1);
                 System.out.print(s + "(" + node.getDepth() + ") ");
 
-                List<Node> childList = node.getChildList();
-                for (int i = childList.size() - 1; i >= 0; i--) {
-                    stack.push(childList.get(i));
+                for (int j = node.getChildNum() - 1; j >= 0; j--) {
+                    stack.push(node.getChildByIndex(j));
                 }
 
             }
@@ -186,9 +190,9 @@ public class Utils {
 
     public static void dfs(Node root) {
 
-        List<Node> list = root.getChildList();
-
-        for (Node ch : list) {
+        for (int i=0;i<root.getChildNum();i++) {
+            
+            Node ch=root.getChildByIndex(i);
 
             Deque<Node> stack = new ArrayDeque<Node>();
 
@@ -201,9 +205,8 @@ public class Utils {
                 s = s.substring(0, s.length() - 1);
                 System.out.print(s + " ");
 
-                List<Node> childList = node.getChildList();
-                for (int i = childList.size() - 1; i >= 0; i--) {
-                    stack.push(childList.get(i));
+                for (int j = node.getChildNum() - 1; j >= 0; j--) {
+                    stack.push(node.getChildByIndex(j));
                 }
 
             }
@@ -230,6 +233,7 @@ public class Utils {
                 continue;
             }
             for (Node node : result) {
+//                System.out.print(node+"("+node.getStart()+", "+node.getEnd()+")");
                 System.out.print(node);
             }
 
@@ -269,6 +273,13 @@ public class Utils {
 
     public static void printNods(List<Node> list) {
         for (Node node : list) {
+            System.out.print(node);
+        }
+        System.out.println();
+    }
+
+    public static void printRemoteNods(List<RemoteNode> list) {
+        for (RemoteNode node : list) {
             System.out.println(node);
         }
         System.out.println();
