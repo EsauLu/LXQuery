@@ -44,13 +44,13 @@ public class Main {
     
     public static void worker(){
         
-        System.out.println("worer");
+        System.out.println("worker");
         
         int port=29000;
         String serverIP="";
         String[] ips=getAllLocalHostIP();
         for(String ip: ips){
-            if(ip.startsWith("192.168.118.")){
+            if(ip.startsWith("172.21.52.")){
                 serverIP=ip;
                 break;
             }

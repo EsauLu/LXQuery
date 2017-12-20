@@ -50,6 +50,8 @@ public class LxqServerImpl implements LxqServer {
         try {
 
             server = new ServerSocket(port, 1, InetAddress.getByName(IP));
+            
+            System.out.println("Local : "+IP+":"+port);
 
             while (isClose == false) {
 
