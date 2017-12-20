@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import esau.lxq.entry.Node;
+import esau.lxq.net.LxqResponse;
 
 public class ListUtils {
     
@@ -26,6 +27,16 @@ public class ListUtils {
             }
         }
         return list;
+    }
+    
+    public static List<List<Node>> recoverNodeListByResponse(List<LxqResponse> responseLists) {
+        List<List<Node>> outputLists = new ArrayList<>();   
+        for (int i = 0; i < responseLists.size(); i++) {
+            LxqResponse response=responseLists.get(i);
+            List<Node> result = ListUtils.recoverNodeList(response.getResultList());
+            outputLists.add(result);
+        }
+        return outputLists;
     }
 
 }

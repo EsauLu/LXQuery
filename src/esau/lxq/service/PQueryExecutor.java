@@ -442,7 +442,8 @@ public class PQueryExecutor {
             resultLists.add(pt.findNodesByUid(uids));
         }
 
-        return QueryExecutor.shareNodes(pts, resultLists);
+//        return QueryExecutor.shareNodes(pts, resultLists);
+        return null;
     }
 
 }

@@ -66,6 +66,9 @@ public class Master {
             List<List<Node>> resultLists = queryExecutor.query(steps);
 
             System.out.println("==============================");
+            System.out.println();
+            System.out.println("Final results :");
+            System.out.println();
             
             Utils.print(resultLists);
 

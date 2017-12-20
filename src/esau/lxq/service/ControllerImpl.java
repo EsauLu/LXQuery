@@ -2,6 +2,8 @@ package esau.lxq.service;
 
 import java.util.List;
 
+import esau.lxq.entry.Node;
+import esau.lxq.entry.PartialTree;
 import esau.lxq.net.Controller;
 import esau.lxq.net.LxqRequest;
 import esau.lxq.net.LxqResponse;
@@ -27,7 +29,7 @@ public class ControllerImpl implements Controller {
         System.out.println();
         System.out.println(request);
         System.out.println();
-        System.out.println("---------------------------------"+msg);
+        System.out.println("---------------------------------");
 
         switch (code) {
         case LxqRequest.CHUNK:
@@ -76,16 +78,60 @@ public class ControllerImpl implements Controller {
 
             break;
 
-        case LxqRequest.GET_ROOT:
-            
+        case LxqRequest.GET_ROOT:{            
             response.setMsg("ROOT");
             response.setResultList(worker.getRoot());
 
             break;
+        }
 
-        case LxqRequest.FIND_CHILD:
-
+        case LxqRequest.FIND_CHILD:{            
+            PartialTree pt=worker.getPartialTree();
+            
+            List<String> inputList=request.getInputList();
+            List<Node> resultList=pt.findChildNodes(ListUtils.recoverNodeList(inputList), msg);
+            
+            response.setMsg("childs");
+            response.setResultList(ListUtils.convertNodeList(resultList));
+            
             break;
+        }
+
+        case LxqRequest.FIND_DESCENDANT:{       
+            PartialTree pt=worker.getPartialTree();
+            
+            List<String> inputList=request.getInputList();
+            List<Node> resultList=pt.findDescendantNodes(ListUtils.recoverNodeList(inputList), msg);
+            
+            response.setMsg("descendant");
+            response.setResultList(ListUtils.convertNodeList(resultList));
+            
+            break;
+        }
+
+        case LxqRequest.FIND_PARENT:{       
+            PartialTree pt=worker.getPartialTree();
+            
+            List<String> inputList=request.getInputList();
+            List<Node> resultList=pt.findParentNodes(ListUtils.recoverNodeList(inputList), msg);
+            
+            response.setMsg("parents");
+            response.setResultList(ListUtils.convertNodeList(resultList));
+            
+            break;
+        }
+
+        case LxqRequest.SHARE_NODES:{       
+            PartialTree pt=worker.getPartialTree();
+            
+            List<String> inputList=request.getInputList();
+            List<Node> resultList=pt.findCorrespondingNodes(ListUtils.recoverNodeList(inputList));
+            
+            response.setMsg("childs");
+            response.setResultList(ListUtils.convertNodeList(resultList));
+            
+            break;
+        }
 
         default:
             break;
