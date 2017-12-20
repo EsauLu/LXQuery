@@ -1,74 +1,98 @@
 package esau.lxq.main;
 
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileInputStream;
+import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.net.SocketException;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.List;
+import java.util.Scanner;
 
+import esau.lxq.net.LxqServer;
+import esau.lxq.net.impl.LxqServerImpl;
+import esau.lxq.service.Master;
 
 public class Main {
+    
+    private static Scanner scn;
 
     public static void main(String[] args) {
         // TODO Auto-generated method stub
+        
+        scn=new Scanner(System.in);        
 
-        try {
-            File file = new File("res/test2.xml");
-//            File file = new File("res/test1.xml");
-
-            StringBuffer xmlBuff = new StringBuffer();
-
-            int len = 0;
+        System.out.println("1. master");
+        System.out.println("2. worker");
+        
+        int k=scn.nextInt();
+        
+        if(k==1){
+            k=1;
             
-            byte[] buff = new byte[1024];
-
-            BufferedInputStream bis = new BufferedInputStream(new FileInputStream(file));
-
-            while ((len = bis.read(buff)) != -1) {
-                xmlBuff.append(new String(buff, 0, len));
+            while(k==1){
+                master();
+                System.out.println("continue? 1/0");
+                k=scn.nextInt();
             }
-
-            System.out.println(xmlBuff.toString());
-            System.out.println("--------------------------------------------------");
-
-            int[] pos = getPos(xmlBuff, 5);
-            for (int i = 0; i < pos.length - 1; i++) {
-
-
-                System.out.println("--------------------------------------------------");
+        }else{
+            worker();
+        }
+        
+        scn.close();
+        
+    }
+    
+    public static void worker(){
+        
+        System.out.println("worer");
+        
+        int port=29000;
+        String serverIP="";
+        String[] ips=getAllLocalHostIP();
+        for(String ip: ips){
+            if(ip.startsWith("192.168.118.")){
+                serverIP=ip;
+                break;
+            }
+        }
+        
+        LxqServer server=new LxqServerImpl(serverIP, port);
+        
+        server.start();
+        
+    }
+    
+    public static void master(){
+        
+        System.out.println("master");
+        
+        Master master=new Master(3);
+        master.start();
                 
-            }
-
-            bis.close();
-
-        } catch (Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-
     }
+    
+    private static String[] getAllLocalHostIP() {  
+        List<String> res = new ArrayList<String>();  
+        Enumeration<NetworkInterface> netInterfaces;  
+        try {  
+            netInterfaces = NetworkInterface.getNetworkInterfaces();  
+            InetAddress ip = null;  
+            while (netInterfaces.hasMoreElements()) {  
+                NetworkInterface ni = (NetworkInterface) netInterfaces  
+                        .nextElement();  
+                Enumeration<InetAddress> nii = ni.getInetAddresses();  
+                while (nii.hasMoreElements()) {  
+                    ip = (InetAddress) nii.nextElement();  
+                    if (ip.getHostAddress().indexOf(":") == -1) {  
+                        res.add(ip.getHostAddress().trim());  
+                    }  
+                }  
+            }  
+        } catch (SocketException e) {  
+            e.printStackTrace();  
+        }  
+        return (String[]) res.toArray(new String[0]);  
+    }  
 
-    private static int[] getPos(StringBuffer xmlDoc, int chunkNum) {
-
-        int[] pos = new int[chunkNum + 1];
-        int t = xmlDoc.length() / chunkNum + 1;
-        for (int i = 0; i < chunkNum; i++) {
-            pos[i] = i * t;
-        }
-        pos[chunkNum] = xmlDoc.length();
-        return fixPos(xmlDoc, pos);
-    }
-
-    private static int[] fixPos(StringBuffer xmlDoc, int[] pos) {
-        long len = xmlDoc.length();
-        for (int i = 0; i < pos.length; i++) {
-            if (pos[i] >= len) {
-                pos[i] = (int) len;
-                continue;
-            }
-            while (xmlDoc.charAt(pos[i]) != '<') {
-                pos[i]--;
-            }
-        }
-        return pos;
-    }
 
 }
