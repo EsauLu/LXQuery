@@ -17,9 +17,10 @@ import esau.lxq.entry.Step;
 import esau.lxq.net.LxqRequest;
 import esau.lxq.net.LxqResponse;
 import esau.lxq.net.impl.LxqRequestImpl;
+import esau.lxq.utils.Utils;
 
 public class PQueryExecutor {
-    
+
     private int p;
 
     private List<Integer> pidList;
@@ -30,9 +31,8 @@ public class PQueryExecutor {
         super();
         this.pidList = pidList;
         this.clientManager = clientManager;
-        this.p=pidList.size();
+        this.p = pidList.size();
     }
-
 
     public List<List<PNode>> preparePredicate(List<List<Node>> inputLists) {
 
@@ -56,12 +56,18 @@ public class PQueryExecutor {
         List<List<PNode>> resultLists = inputLists;
 
         Step pstep = psteps;
-        
-        // System.out.println();
-        // System.out.println("Predicate : "+psteps.toXPath());
-        // System.out.println();
-        // System.out.println("----------------------------------------------------------");
-        
+
+        System.out.println();
+        System.out.println("Predicate : "+psteps.toXPath());
+        System.out.println();
+        System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+        System.out.println();
+        System.out.println("inputs : ");
+        System.out.println();
+        Utils.printPNodeList(inputLists);
+        System.out.println();
+        System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+
         while (pstep != null) {
 
             resultLists = pQueryWithAixs(pstep.getAxis(), resultLists, pstep.getNameTest());
@@ -71,6 +77,8 @@ public class PQueryExecutor {
 
                 // Querying predicate. his block will be executed when a query has a predicate.
 
+                System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+                
                 List<List<PNode>> intermadiate = regroupResults(resultLists);
 
                 intermadiate = predicateQuery(predicate, intermadiate);
@@ -81,9 +89,9 @@ public class PQueryExecutor {
 
             }
 
-            // System.out.println();
-            // System.out.println("Predicate Step" + " : " + pstep);
-            // Utils.printPNodeList(resultLists);
+             System.out.println();
+             System.out.println("Predicate Step" + " : " + pstep);
+             Utils.printPNodeList(resultLists);
 
             pstep = pstep.getNext();
 
@@ -120,7 +128,7 @@ public class PQueryExecutor {
     public List<List<PNode>> queryChid(List<List<PNode>> inputLists, String test) {
 
         LxqRequest request = new LxqRequestImpl();
-        request.setCode(LxqRequest.FIND_CHILD_NODES);
+        request.setCode(LxqRequest.FIND_CHILD_PNODES);
         request.setMsg(test);
 
         return sendFindRequests(request, inputLists);
@@ -130,7 +138,7 @@ public class PQueryExecutor {
     public List<List<PNode>> queryDescendant(List<List<PNode>> inputLists, String test) {
 
         LxqRequest request = new LxqRequestImpl();
-        request.setCode(LxqRequest.FIND_DESCENDANT_NODES);
+        request.setCode(LxqRequest.FIND_DESCENDANT_PNODES);
         request.setMsg(test);
 
         return sendFindRequests(request, inputLists);
@@ -139,14 +147,14 @@ public class PQueryExecutor {
 
     public List<List<PNode>> queryParentIgnoreCNode(List<List<PNode>> inputLists, String test) {
         LxqRequest request = new LxqRequestImpl();
-        request.setCode(LxqRequest.FIND_PARENT_NODES);
+        request.setCode(LxqRequest.FIND_PARENT_PNODES);
         request.setMsg(test);
         return sendFindRequests(request, inputLists);
 
     }
 
     public List<List<PNode>> queryParent(List<List<PNode>> inputLists, String test) {
-        return shareNodes(queryParentIgnoreCNode(inputLists, test));
+        return sharePNodes(queryParentIgnoreCNode(inputLists, test));
 
     }
 
@@ -164,13 +172,13 @@ public class PQueryExecutor {
         return ListUtils.recoverPNodeListByResponse(resposeLists);
     }
 
-    public List<List<PNode>> shareNodes(List<List<PNode>> nodeLists) {
+    public List<List<PNode>> sharePNodes(List<List<PNode>> nodeLists) {
 
         List<PNode> toBeShare = new ArrayList<PNode>();
 
         for (int i = 0; i < p; i++) {
             for (PNode pNode : nodeLists.get(i)) {
-                Node node=pNode.getNode();
+                Node node = pNode.getNode();
                 if (!NodeType.CLOSED_NODE.equals(node.getType())) {
                     toBeShare.add(pNode);
                 }
@@ -204,7 +212,7 @@ public class PQueryExecutor {
 
         // Local query
         LxqRequest request = new LxqRequestImpl();
-        request.setCode(LxqRequest.FIND_FOLSIB_NODES);
+        request.setCode(LxqRequest.FIND_FOLSIB_PNODES);
         request.setMsg(test);
         List<List<PNode>> outputList = sendFindRequests(request, inputLists);
 
@@ -233,7 +241,7 @@ public class PQueryExecutor {
         return outputList;
 
     }
-    
+
     private List<RemoteNode> prepareRemoteQuery(List<List<PNode>> inputLists) {
         // TODO Auto-generated method stub
 
@@ -244,7 +252,7 @@ public class PQueryExecutor {
             List<PNode> tem = new ArrayList<>();
             List<PNode> input = inputLists.get(i);
             for (PNode pNode : input) {
-                Node node=pNode.getNode();
+                Node node = pNode.getNode();
                 if (!node.isRightOpenNode() && !node.isPreOpenNode()) {
                     tem.add(pNode);
                 }
@@ -252,11 +260,11 @@ public class PQueryExecutor {
             parentList.add(tem);
 
         }
-        
+
         parentList = queryParentIgnoreCNode(parentList, "*");
         for (int i = 0; i < p; i++) {
             for (PNode pNode : parentList.get(i)) {
-                Node parent=pNode.getNode();
+                Node parent = pNode.getNode();
                 if (parent.isRightOpenNode() || parent.isPreOpenNode()) {
                     toBeQueried.add(new RemoteNode(parent, i + 1, parent.getEnd()));
                 }
@@ -264,19 +272,19 @@ public class PQueryExecutor {
         }
         return toBeQueried;
     }
-    
-    private List<List<PNode>> regroupNodes(List<RemoteNode> toBeQueried){
+
+    private List<List<PNode>> regroupNodes(List<RemoteNode> toBeQueried) {
         List<List<PNode>> remoteInputList = new ArrayList<>();
 
-        for(int i=0;i<p;i++) {
-            List<PNode> remoteInput=new ArrayList<>();
-            Map<Long, PNode> map=new HashMap<>();
-            for(int j=0;j<toBeQueried.size();j++) {
-                RemoteNode remoteNode=toBeQueried.get(j);
+        for (int i = 0; i < p; i++) {
+            List<PNode> remoteInput = new ArrayList<>();
+            Map<Long, PNode> map = new HashMap<>();
+            for (int j = 0; j < toBeQueried.size(); j++) {
+                RemoteNode remoteNode = toBeQueried.get(j);
                 if (remoteNode.st <= i && remoteNode.ed >= i) {
-                    Node node=remoteNode.getNode();
-                    if(!map.containsKey(node.getUid())) {
-//                        map.put(node.getUid(), node);
+                    Node node = remoteNode.getNode();
+                    if (!map.containsKey(node.getUid())) {
+                        // map.put(node.getUid(), node);
                     }
                 }
             }
@@ -357,7 +365,7 @@ public class PQueryExecutor {
 
     }
 
-    public static List<List<Node>> proccessPredicate(List<List<PNode>> inputLists) {
+    public List<List<Node>> proccessPredicate(List<List<PNode>> inputLists) {
 
         List<Link> allLinks = new ArrayList<>();
         for (List<PNode> list : inputLists) {
@@ -366,27 +374,66 @@ public class PQueryExecutor {
             }
         }
 
-        List<List<Long>> uidLists = new ArrayList<List<Long>>();
-//        for (int i = 0; i < p; i++) {
-//            uidLists.add(new ArrayList<Long>());
-//        }
+        Map<Integer, List<Node>> uidLists = new HashMap<>();
+        for (int i = 0; i < p; i++) {
+            int pid = pidList.get(i);
+            uidLists.put(pid, new ArrayList<Node>());
+        }
 
         for (Link link : allLinks) {
-            List<Long> uids = uidLists.get(link.getPid());
+            List<Node> uids = uidLists.get(link.getPid());
             if (uids != null) {
-                uids.add(link.getUid());
+                uids.add(new Node(link.getUid()));
             }
         }
 
-        List<List<Node>> resultLists = new ArrayList<List<Node>>();
-//        for (int i = 0; i < p; i++) {
-//            PartialTree pt = pts.get(i);
-//            List<Long> uids = uidLists.get(i);
-////            resultLists.add(pt.findNodesByUid(uids));
-//        }
+        LxqRequest request=new LxqRequestImpl();
+        request.setCode(LxqRequest.FIND_NODES_BY_UID);
+        for (int i = 0; i < p; i++) {
+            int pid = pidList.get(i);
+            List<Node> uids = uidLists.get(pid);
+            request.setInputList(ListUtils.convertNodeList(uids));
+            clientManager.sendRequest(pid, request);
+        }
+        List<LxqResponse> responses=clientManager.getResponseList(pidList);
+        List<List<Node>> resultLists = ListUtils.recoverNodeListByResponse(responses);
 
-//        return QueryExecutor.shareNodes(pts, resultLists);
-        return null;
+        return shareNodes(resultLists);
+    }
+
+    public List<List<Node>> shareNodes(List<List<Node>> nodeLists) {
+
+        List<Node> toBeShare = new ArrayList<Node>();
+
+        for (int i = 0; i < p; i++) {
+            for (Node node : nodeLists.get(i)) {
+                if (!NodeType.CLOSED_NODE.equals(node.getType())) {
+                    toBeShare.add(node);
+                }
+            }
+        }
+
+        LxqRequest request = new LxqRequestImpl();
+        request.setCode(LxqRequest.SHARE_NODES);
+        request.setInputList(ListUtils.convertNodeList(toBeShare));
+        clientManager.sendRequests(request);
+
+        List<List<Node>> responseLists = ListUtils.recoverNodeListByResponse(clientManager.getResponseList(pidList));
+
+        for (int i = 0; i < p; i++) {
+
+            Set<Node> set = new HashSet<Node>();
+            List<Node> inputList = nodeLists.get(i);
+
+            set.addAll(inputList);
+            set.addAll(responseLists.get(i));
+
+            inputList.clear();
+            inputList.addAll(set);
+
+        }
+
+        return nodeLists;
     }
 
 }

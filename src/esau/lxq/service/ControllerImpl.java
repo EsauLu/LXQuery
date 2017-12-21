@@ -209,6 +209,14 @@ public class ControllerImpl implements Controller {
         }
 
         case LxqRequest.FIND_FOLSIB_PNODES:{       
+            PartialTree pt=worker.getPartialTree();
+            
+            List<String> inputList=request.getInputList();
+            List<PNode> resultList=pt.findFolSibPNodes(ListUtils.recoverPNodeList(inputList), msg);
+            
+            response.setMsg("following sibling");
+            response.setResultList(ListUtils.convertPNodeList(resultList));
+            
             break;
         }
 

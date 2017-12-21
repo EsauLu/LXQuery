@@ -34,6 +34,13 @@ public class Node {
         init();
     }
 
+    public Node(long uid) {
+        super();
+        // TODO Auto-generated constructor stub
+        init();
+        this.uid=uid;
+    }
+
     public Node(long uid, String tagName, NodeType type) {
         super();
         init();

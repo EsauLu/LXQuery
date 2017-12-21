@@ -10,6 +10,7 @@ import java.util.Set;
 import esau.lxq.entry.Axis;
 import esau.lxq.entry.Node;
 import esau.lxq.entry.NodeType;
+import esau.lxq.entry.PNode;
 import esau.lxq.entry.RemoteNode;
 import esau.lxq.entry.Step;
 import esau.lxq.net.LxqRequest;
@@ -57,12 +58,14 @@ public class QueryExecutor {
             Step predicate = step.getPredicate();
             if (predicate != null) {
                 // Querying predicate. his block will be executed when a query has a predicate.
+                
+                PQueryExecutor pQueryExecutor=new PQueryExecutor(pidList, clientManager);
 
-                // List<List<PNode>> intermadiate=PQueryExecutor.preparePredicate(resultList);
-                //
-                // intermadiate=PQueryExecutor.predicateQuery(predicate, pts, intermadiate);
-                //
-                // resultList=PQueryExecutor.proccessPredicate(pts, intermadiate);
+                 List<List<PNode>> intermadiate=pQueryExecutor.preparePredicate(resultList);
+                
+                 intermadiate=pQueryExecutor.predicateQuery(predicate, intermadiate);
+                
+                 resultList=pQueryExecutor.proccessPredicate(intermadiate);
 
             }
 
@@ -105,7 +108,7 @@ public class QueryExecutor {
     public List<List<Node>> queryChid(List<List<Node>> inputLists, String test) {
 
         LxqRequest request = new LxqRequestImpl();
-        request.setCode(LxqRequest.FIND_CHILD_PNODES);
+        request.setCode(LxqRequest.FIND_CHILD_NODES);
         request.setMsg(test);
 
         return sendFindRequests(request, inputLists);
@@ -115,7 +118,7 @@ public class QueryExecutor {
     public List<List<Node>> queryDescendant(List<List<Node>> inputLists, String test) {
 
         LxqRequest request = new LxqRequestImpl();
-        request.setCode(LxqRequest.FIND_DESCENDANT_PNODES);
+        request.setCode(LxqRequest.FIND_DESCENDANT_NODES);
         request.setMsg(test);
 
         return sendFindRequests(request, inputLists);
@@ -124,7 +127,7 @@ public class QueryExecutor {
 
     public List<List<Node>> queryParentIgnoreCNode(List<List<Node>> inputLists, String test) {
         LxqRequest request = new LxqRequestImpl();
-        request.setCode(LxqRequest.FIND_PARENT_PNODES);
+        request.setCode(LxqRequest.FIND_PARENT_NODES);
         request.setMsg(test);
         return sendFindRequests(request, inputLists);
 
