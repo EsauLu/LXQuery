@@ -18,7 +18,7 @@ public class Node {
 
     private Node presib;
 
-    private Node flosib;
+    private Node folsib;
 
     private int start;
 
@@ -114,12 +114,12 @@ public class Node {
         this.presib = presib;
     }
 
-    public Node getFlosib() {
-        return flosib;
+    public Node getFolsib() {
+        return folsib;
     }
 
-    public void setFlosib(Node flosib) {
-        this.flosib = flosib;
+    public void setFolsib(Node flosib) {
+        this.folsib = flosib;
     }
 
 //    public List<Node> getChildList() {
@@ -215,7 +215,7 @@ public class Node {
         return uid + " " + tagName + " " + type + " " + start + " " + end;
     }
 
-    public static Node parse(String text) {
+    public static Node parseNode(String text) {
 
         String[] fileds = text.trim().split(" ");
 

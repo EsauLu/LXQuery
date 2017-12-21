@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import esau.lxq.entry.Axis;
@@ -11,13 +12,29 @@ import esau.lxq.entry.Link;
 import esau.lxq.entry.Node;
 import esau.lxq.entry.NodeType;
 import esau.lxq.entry.PNode;
-import esau.lxq.entry.PartialTree;
 import esau.lxq.entry.RemoteNode;
 import esau.lxq.entry.Step;
+import esau.lxq.net.LxqRequest;
+import esau.lxq.net.LxqResponse;
+import esau.lxq.net.impl.LxqRequestImpl;
 
 public class PQueryExecutor {
+    
+    private int p;
 
-    public static List<List<PNode>> preparePredicate(List<List<Node>> inputLists) {
+    private List<Integer> pidList;
+
+    private ClientManager clientManager;
+
+    public PQueryExecutor(List<Integer> pidList, ClientManager clientManager) {
+        super();
+        this.pidList = pidList;
+        this.clientManager = clientManager;
+        this.p=pidList.size();
+    }
+
+
+    public List<List<PNode>> preparePredicate(List<List<Node>> inputLists) {
 
         List<List<PNode>> outputLists = new ArrayList<List<PNode>>();
 
@@ -34,7 +51,7 @@ public class PQueryExecutor {
 
     }
 
-    public static List<List<PNode>> predicateQuery(Step psteps, List<PartialTree> pts, List<List<PNode>> inputLists) {
+    public List<List<PNode>> predicateQuery(Step psteps, List<List<PNode>> inputLists) {
 
         List<List<PNode>> resultLists = inputLists;
 
@@ -47,7 +64,7 @@ public class PQueryExecutor {
         
         while (pstep != null) {
 
-            resultLists = pQueryWithAixs(pstep.getAxis(), pts, resultLists, pstep.getNameTest());
+            resultLists = pQueryWithAixs(pstep.getAxis(), resultLists, pstep.getNameTest());
 
             Step predicate = pstep.getPredicate();
             if (predicate != null) {
@@ -56,9 +73,9 @@ public class PQueryExecutor {
 
                 List<List<PNode>> intermadiate = regroupResults(resultLists);
 
-                intermadiate = predicateQuery(predicate, pts, intermadiate);
+                intermadiate = predicateQuery(predicate, intermadiate);
 
-                List<List<Node>> nodeLists = proccessPredicate(pts, intermadiate);
+                List<List<Node>> nodeLists = proccessPredicate(intermadiate);
 
                 resultLists = filterResults(resultLists, nodeLists);
 
@@ -75,188 +92,105 @@ public class PQueryExecutor {
         return resultLists;
     }
 
-    public static List<List<PNode>> pQueryWithAixs(Axis axis, List<PartialTree> pts, List<List<PNode>> inputLists, String test) {
+    public List<List<PNode>> pQueryWithAixs(Axis axis, List<List<PNode>> inputLists, String test) {
 
         // Child axis
         if (Axis.CHILD.equals(axis)) {
-            return queryChid(pts, inputLists, test);
+            return queryChid(inputLists, test);
         }
 
         // Descendant axis
         if (Axis.DESCENDANT.equals(axis)) {
-            return queryDescendant(pts, inputLists, test);
+            return queryDescendant(inputLists, test);
         }
 
         // Parent axis
         if (Axis.PARENT.equals(axis)) {
-            return queryParent(pts, inputLists, test);
+            return queryParent(inputLists, test);
         }
 
         // Following-sibling axis
         if (Axis.FOLLOWING_SIBLING.equals(axis)) {
-            return queryFollowingSibling(pts, inputLists, test);
+            return queryFollowingSibling(inputLists, test);
         }
 
         return null;
     }
 
-    /**
-     * Querying a step with a child axis.
-     * 
-     * @param pts
-     *            An indexed set of partial trees.
-     * @param inputLists
-     *            An indexed set of input nodes.
-     * @param test
-     *            A string of nametest.
-     * @return An indexed set of results.
-     */
-    public static List<List<PNode>> queryChid(List<PartialTree> pts, List<List<PNode>> inputLists, String test) {
+    public List<List<PNode>> queryChid(List<List<PNode>> inputLists, String test) {
 
-        List<List<PNode>> outputList = new ArrayList<>();
+        LxqRequest request = new LxqRequestImpl();
+        request.setCode(LxqRequest.FIND_CHILD_NODES);
+        request.setMsg(test);
 
-        int p = pts.size();
-        for (int i = 0; i < p; i++) {
-
-            PartialTree pt = pts.get(i);
-
-            List<PNode> result = pt.findChildPNodes(inputLists.get(i), test);
-
-            outputList.add(result);
-
-        }
-
-        return outputList;
-    }
-
-    /**
-     * Querying a step with a descendant axis.
-     * 
-     * @param pts
-     *            An indexed set of partial trees.
-     * @param inputLists
-     *            An indexed set of input nodes.
-     * @param test
-     *            A string of nametest.
-     * @return An indexed set of results.
-     */
-    public static List<List<PNode>> queryDescendant(List<PartialTree> pts, List<List<PNode>> inputLists, String test) {
-        List<List<PNode>> outputList = new ArrayList<>();
-
-        int p = pts.size();
-        for (int i = 0; i < p; i++) {
-
-            PartialTree pt = pts.get(i);
-
-            List<PNode> result = pt.findDescendantPNodes(inputLists.get(i), test);
-
-            outputList.add(result);
-
-        }
-
-        return outputList;
-    }
-
-    /**
-     * Querying a step with a parent axis.
-     * 
-     * @param pts
-     *            An indexed set of partial trees.
-     * @param inputLists
-     *            An indexed set of input nodes.
-     * @param test
-     *            A string of nametest.
-     * @return An indexed set of results.
-     */
-    public static List<List<PNode>> queryParent(List<PartialTree> pts, List<List<PNode>> inputLists, String test) {
-
-        List<List<PNode>> outputList = new ArrayList<>();
-
-        int p = pts.size();
-        for (int i = 0; i < p; i++) {
-
-            PartialTree pt = pts.get(i);
-
-            List<PNode> result = pt.findParentPNodes(inputLists.get(i), test);
-
-            outputList.add(result);
-
-        }
-
-        return sharePNodes(pts, outputList);
+        return sendFindRequests(request, inputLists);
 
     }
 
-    /**
-     * Sharing the selected nodes.
-     * 
-     * @param pts
-     *            An indexed set of partial trees.
-     * @param nodeLists
-     *            An indexed set of input nodes.
-     * @return An indexed set of results.
-     */
-    public static List<List<Node>> shareNodes(List<PartialTree> pts, List<List<Node>> nodeLists) {
+    public List<List<PNode>> queryDescendant(List<List<PNode>> inputLists, String test) {
 
-        List<Node> toBeShare = new ArrayList<Node>();
+        LxqRequest request = new LxqRequestImpl();
+        request.setCode(LxqRequest.FIND_DESCENDANT_NODES);
+        request.setMsg(test);
 
-        int p = pts.size();
-        for (int i = 0; i < p; i++) {
-            for (Node node : nodeLists.get(i)) {
-                if (!NodeType.CLOSED_NODE.equals(node.getType())) {
-                    toBeShare.add(node);
-                }
-            }
-        }
+        return sendFindRequests(request, inputLists);
 
-        for (int i = 0; i < p; i++) {
-
-            Set<Node> set = new HashSet<Node>();
-            List<Node> inputList = nodeLists.get(i);
-            PartialTree pt = pts.get(i);
-
-            set.addAll(inputList);
-            set.addAll(pt.findCorrespondingNodes(toBeShare));
-
-            inputList.clear();
-            inputList.addAll(set);
-
-        }
-
-        return nodeLists;
     }
 
-    /**
-     * Sharing the selected nodes.
-     * 
-     * @param pts
-     *            An indexed set of partial trees.
-     * @param nodeLists
-     *            An indexed set of input nodes.
-     * @return An indexed set of results.
-     */
-    public static List<List<PNode>> sharePNodes(List<PartialTree> pts, List<List<PNode>> nodeLists) {
+    public List<List<PNode>> queryParentIgnoreCNode(List<List<PNode>> inputLists, String test) {
+        LxqRequest request = new LxqRequestImpl();
+        request.setCode(LxqRequest.FIND_PARENT_NODES);
+        request.setMsg(test);
+        return sendFindRequests(request, inputLists);
+
+    }
+
+    public List<List<PNode>> queryParent(List<List<PNode>> inputLists, String test) {
+        return shareNodes(queryParentIgnoreCNode(inputLists, test));
+
+    }
+
+    private List<List<PNode>> sendFindRequests(LxqRequest request, List<List<PNode>> inputLists) {
+
+        for (int i = 0; i < p; i++) {
+            int pid = pidList.get(i);
+            List<PNode> input = inputLists.get(i);
+            request.setInputList(ListUtils.convertPNodeList(input));
+            clientManager.sendRequest(pid, request);
+        }
+
+        List<LxqResponse> resposeLists = clientManager.getResponseList(pidList);
+
+        return ListUtils.recoverPNodeListByResponse(resposeLists);
+    }
+
+    public List<List<PNode>> shareNodes(List<List<PNode>> nodeLists) {
 
         List<PNode> toBeShare = new ArrayList<PNode>();
 
-        int p = pts.size();
         for (int i = 0; i < p; i++) {
             for (PNode pNode : nodeLists.get(i)) {
-                Node node = pNode.getNode();
+                Node node=pNode.getNode();
                 if (!NodeType.CLOSED_NODE.equals(node.getType())) {
                     toBeShare.add(pNode);
                 }
             }
         }
 
+        LxqRequest request = new LxqRequestImpl();
+        request.setCode(LxqRequest.SHARE_NODES);
+        request.setInputList(ListUtils.convertPNodeList(toBeShare));
+        clientManager.sendRequests(request);
+
+        List<List<PNode>> responseLists = ListUtils.recoverPNodeListByResponse(clientManager.getResponseList(pidList));
+
         for (int i = 0; i < p; i++) {
 
             Set<PNode> set = new HashSet<PNode>();
             List<PNode> inputList = nodeLists.get(i);
-            PartialTree pt = pts.get(i);
 
             set.addAll(inputList);
-            set.addAll(pt.findCorrespondingPNodes(toBeShare));
+            set.addAll(responseLists.get(i));
 
             inputList.clear();
             inputList.addAll(set);
@@ -266,64 +200,22 @@ public class PQueryExecutor {
         return nodeLists;
     }
 
-    /**
-     * Sharing the selected nodes.
-     * 
-     * @param pts
-     *            An indexed set of partial trees.
-     * @param nodeLists
-     *            An indexed set of input nodes.
-     * @return An indexed set of results.
-     */
-    public static List<List<PNode>> queryFollowingSibling(List<PartialTree> pts, List<List<PNode>> inputLists, String test) {
-
-        List<List<PNode>> outputList = new ArrayList<List<PNode>>();
-        int p = pts.size();
+    public List<List<PNode>> queryFollowingSibling(List<List<PNode>> inputLists, String test) {
 
         // Local query
-        for (int i = 0; i < p; i++) {
-            PartialTree pt = pts.get(i);
-            List<PNode> result = pt.findFolSibPNodes(inputLists.get(i), test);
-            outputList.add(result);
-        }
+        LxqRequest request = new LxqRequestImpl();
+        request.setCode(LxqRequest.FIND_FOLSIB_NODES);
+        request.setMsg(test);
+        List<List<PNode>> outputList = sendFindRequests(request, inputLists);
 
         // Preparing remote query
-        List<RemoteNode> toBeQueried = new ArrayList<RemoteNode>();
-        for (int i = 0; i < p; i++) {
-            for (PNode inputPNode : inputLists.get(i)) {
-                Node node = inputPNode.getNode();
-                Node parent = node.getParent();
-                if (!NodeType.RIGHT_OPEN_NODE.equals(node.getType()) && !NodeType.PRE_NODE.equals(node.getType()) && parent != null
-                        && (NodeType.RIGHT_OPEN_NODE.equals(parent.getType()) || NodeType.PRE_NODE.equals(parent.getType()))) {
-                    toBeQueried.add(new RemoteNode(parent, i + 1, parent.getEnd(), inputPNode.getLink()));
-                }
-            }
-        }
+        List<RemoteNode> toBeQueried = prepareRemoteQuery(inputLists);
 
         // Regroup nodes by partial tree id
-        List<List<PNode>> remoteInputList = new ArrayList<>();
-        for (int i = 0; i < p; i++) {
-            List<PNode> uidList = new ArrayList<PNode>();
-            Set<PNode> uidSet = new HashSet<PNode>();
-            for (RemoteNode rn : toBeQueried) {
-                if (rn.st <= i && rn.ed >= i) {
-                    uidSet.add(new PNode(rn.getNode(), rn.getLink()));
-                }
-            }
-            uidList.addAll(uidSet);
-            remoteInputList.add(uidList);
-        }
-
-        // List<List<PNode>> remoteInputList = new ArrayList<List<PNode>>();
-        // for (int i = 0; i < p; i++) {
-        // PartialTree pt = pts.get(i);
-        // List<PNode> remoteInput = pt.findPNodesByUid(uidLists.get(i));
-        // remoteInputList.add(remoteInput);
-        // }
-        // List<List<PNode>> remoteOutputList = queryChid(pts, remoteInputList, test);
+        List<List<PNode>> remoteInputList = regroupNodes(toBeQueried);
 
         // Remote query
-        List<List<PNode>> remoteOutputList = queryChid(pts, remoteInputList, test);
+        List<List<PNode>> remoteOutputList = queryChid(remoteInputList, test);
 
         // Merge results of local query and remote query
         for (int i = 0; i < p; i++) {
@@ -340,6 +232,58 @@ public class PQueryExecutor {
 
         return outputList;
 
+    }
+    
+    private List<RemoteNode> prepareRemoteQuery(List<List<PNode>> inputLists) {
+        // TODO Auto-generated method stub
+
+        List<List<PNode>> parentList = new ArrayList<>();
+        List<RemoteNode> toBeQueried = new ArrayList<RemoteNode>();
+        for (int i = 0; i < p; i++) {
+
+            List<PNode> tem = new ArrayList<>();
+            List<PNode> input = inputLists.get(i);
+            for (PNode pNode : input) {
+                Node node=pNode.getNode();
+                if (!node.isRightOpenNode() && !node.isPreOpenNode()) {
+                    tem.add(pNode);
+                }
+            }
+            parentList.add(tem);
+
+        }
+        
+        parentList = queryParentIgnoreCNode(parentList, "*");
+        for (int i = 0; i < p; i++) {
+            for (PNode pNode : parentList.get(i)) {
+                Node parent=pNode.getNode();
+                if (parent.isRightOpenNode() || parent.isPreOpenNode()) {
+                    toBeQueried.add(new RemoteNode(parent, i + 1, parent.getEnd()));
+                }
+            }
+        }
+        return toBeQueried;
+    }
+    
+    private List<List<PNode>> regroupNodes(List<RemoteNode> toBeQueried){
+        List<List<PNode>> remoteInputList = new ArrayList<>();
+
+        for(int i=0;i<p;i++) {
+            List<PNode> remoteInput=new ArrayList<>();
+            Map<Long, PNode> map=new HashMap<>();
+            for(int j=0;j<toBeQueried.size();j++) {
+                RemoteNode remoteNode=toBeQueried.get(j);
+                if (remoteNode.st <= i && remoteNode.ed >= i) {
+                    Node node=remoteNode.getNode();
+                    if(!map.containsKey(node.getUid())) {
+//                        map.put(node.getUid(), node);
+                    }
+                }
+            }
+            remoteInput.addAll(map.values());
+            remoteInputList.add(remoteInput);
+        }
+        return remoteInputList;
     }
 
     public static List<List<PNode>> regroupResults(List<List<PNode>> inputLists) {
@@ -413,7 +357,7 @@ public class PQueryExecutor {
 
     }
 
-    public static List<List<Node>> proccessPredicate(List<PartialTree> pts, List<List<PNode>> inputLists) {
+    public static List<List<Node>> proccessPredicate(List<List<PNode>> inputLists) {
 
         List<Link> allLinks = new ArrayList<>();
         for (List<PNode> list : inputLists) {
@@ -422,11 +366,10 @@ public class PQueryExecutor {
             }
         }
 
-        int p = pts.size();
         List<List<Long>> uidLists = new ArrayList<List<Long>>();
-        for (int i = 0; i < p; i++) {
-            uidLists.add(new ArrayList<Long>());
-        }
+//        for (int i = 0; i < p; i++) {
+//            uidLists.add(new ArrayList<Long>());
+//        }
 
         for (Link link : allLinks) {
             List<Long> uids = uidLists.get(link.getPid());
@@ -436,11 +379,11 @@ public class PQueryExecutor {
         }
 
         List<List<Node>> resultLists = new ArrayList<List<Node>>();
-        for (int i = 0; i < p; i++) {
-            PartialTree pt = pts.get(i);
-            List<Long> uids = uidLists.get(i);
-//            resultLists.add(pt.findNodesByUid(uids));
-        }
+//        for (int i = 0; i < p; i++) {
+//            PartialTree pt = pts.get(i);
+//            List<Long> uids = uidLists.get(i);
+////            resultLists.add(pt.findNodesByUid(uids));
+//        }
 
 //        return QueryExecutor.shareNodes(pts, resultLists);
         return null;

@@ -39,6 +39,29 @@ public class PNode {
         this.node = node;
         this.link = link;
     }
+    
+    public String toText() {
+        return node.toText()+" "+link.toText();
+    }
+    
+    public static PNode parsePNode(String text) {
+        
+        if(text==null||text.isEmpty()) {
+            return null;
+        }
+        
+        try {
+            int k=text.lastIndexOf(" ");
+            Node node=Node.parseNode(text.substring(0, k).trim());
+            Link link=Link.parseLink(text.substring(k).trim());
+            return new PNode(node, link);
+        } catch (Exception e) {
+            // TODO: handle exception
+        }
+        
+        return null;
+        
+    }
 
     @Override
     public boolean equals(Object obj) {

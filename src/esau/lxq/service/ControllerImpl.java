@@ -3,6 +3,7 @@ package esau.lxq.service;
 import java.util.List;
 
 import esau.lxq.entry.Node;
+import esau.lxq.entry.PNode;
 import esau.lxq.entry.PartialTree;
 import esau.lxq.net.Controller;
 import esau.lxq.net.LxqRequest;
@@ -85,7 +86,7 @@ public class ControllerImpl implements Controller {
             break;
         }
 
-        case LxqRequest.FIND_CHILD:{            
+        case LxqRequest.FIND_CHILD_NODES:{            
             PartialTree pt=worker.getPartialTree();
             
             List<String> inputList=request.getInputList();
@@ -97,7 +98,7 @@ public class ControllerImpl implements Controller {
             break;
         }
 
-        case LxqRequest.FIND_DESCENDANT:{       
+        case LxqRequest.FIND_DESCENDANT_NODES:{       
             PartialTree pt=worker.getPartialTree();
             
             List<String> inputList=request.getInputList();
@@ -109,7 +110,7 @@ public class ControllerImpl implements Controller {
             break;
         }
 
-        case LxqRequest.FIND_PARENT:{       
+        case LxqRequest.FIND_PARENT_NODES:{       
             PartialTree pt=worker.getPartialTree();
             
             List<String> inputList=request.getInputList();
@@ -133,7 +134,7 @@ public class ControllerImpl implements Controller {
             break;
         }
 
-        case LxqRequest.FIND_FOLLOWING_SIBLING:{       
+        case LxqRequest.FIND_FOLSIB_NODES:{       
             PartialTree pt=worker.getPartialTree();
             
             List<String> inputList=request.getInputList();
@@ -155,6 +156,63 @@ public class ControllerImpl implements Controller {
             response.setMsg("Nodes");
             response.setResultList(ListUtils.convertNodeList(resultList));
             
+            break;
+        }
+
+        case LxqRequest.FIND_CHILD_PNODES:{            
+            PartialTree pt=worker.getPartialTree();
+            
+            List<String> inputList=request.getInputList();
+            List<PNode> resultList=pt.findChildPNodes(ListUtils.recoverPNodeList(inputList), msg);
+            
+            response.setMsg("childs");
+            response.setResultList(ListUtils.convertPNodeList(resultList));
+            
+            break;
+        }
+
+        case LxqRequest.FIND_DESCENDANT_PNODES:{   
+            
+            PartialTree pt=worker.getPartialTree();
+            
+            List<String> inputList=request.getInputList();
+            List<PNode> resultList=pt.findDescendantPNodes(ListUtils.recoverPNodeList(inputList), msg);
+            
+            response.setMsg("descendant");
+            response.setResultList(ListUtils.convertPNodeList(resultList));
+               
+            break;
+        }
+
+        case LxqRequest.FIND_PARENT_PNODES:{     
+            PartialTree pt=worker.getPartialTree();
+            
+            List<String> inputList=request.getInputList();
+            List<PNode> resultList=pt.findParentPNodes(ListUtils.recoverPNodeList(inputList), msg);
+            
+            response.setMsg("parents");
+            response.setResultList(ListUtils.convertPNodeList(resultList));
+            
+            break;
+        }
+
+        case LxqRequest.SHARE_PNODES:{   
+            PartialTree pt=worker.getPartialTree();
+            
+            List<String> inputList=request.getInputList();
+            List<PNode> resultList=pt.findCorrespondingPNodes(ListUtils.recoverPNodeList(inputList));
+            
+            response.setMsg("Share nodes");
+            response.setResultList(ListUtils.convertPNodeList(resultList));
+              
+            break;
+        }
+
+        case LxqRequest.FIND_FOLSIB_PNODES:{       
+            break;
+        }
+
+        case LxqRequest.FIND_PNODES_BY_UID:{     
             break;
         }
 

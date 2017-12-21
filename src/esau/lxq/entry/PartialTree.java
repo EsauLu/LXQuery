@@ -278,10 +278,10 @@ public class PartialTree {
             Node tem = inputList.get(i);
             Node node = nodeMap.get(tem.getUid());
 
-            while (!node.isChecked() && node.getFlosib() != null) {
+            while (!node.isChecked() && node.getFolsib() != null) {
 
                 node.setChecked(true);
-                node = node.getFlosib();
+                node = node.getFolsib();
 
                 if (checkNameTest(test, node)) {
                     outputList.add(node);
@@ -307,10 +307,10 @@ public class PartialTree {
             Node tem = inputPNode.getNode();
             Node node = nodeMap.get(tem.getUid());
 
-            while (!node.isChecked() && node.getFlosib() != null) {
+            while (!node.isChecked() && node.getFolsib() != null) {
 
                 node.setChecked(true);
-                node = node.getFlosib();
+                node = node.getFolsib();
 
                 if (checkNameTest(test, node)) {
                     PNode pNode = new PNode();
@@ -404,14 +404,14 @@ public class PartialTree {
                     nd.setPresib(node.getChildByIndex(i - 1));
                 }
                 if (i < node.getChildNum() - 1) {
-                    nd.setFlosib(node.getChildByIndex(i + 1));
+                    nd.setFolsib(node.getChildByIndex(i + 1));
                 }
                 que.addLast(nd);
                 nd.setDepth(node.getDepth() + 1);
                 nd.setParent(node);
                 if (presib != null) {
                     nd.setPresib(presib);
-                    presib.setFlosib(nd);
+                    presib.setFolsib(nd);
                 }
                 presib = nd;
             }

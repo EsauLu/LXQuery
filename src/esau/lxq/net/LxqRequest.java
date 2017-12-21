@@ -18,17 +18,29 @@ public interface LxqRequest {
 
     public static final int GET_ROOT = 112;
 
-    public static final int FIND_CHILD = 109;
+    public static final int FIND_CHILD_NODES = 109;
 
-    public static final int FIND_DESCENDANT = 113;
+    public static final int FIND_DESCENDANT_NODES = 113;
 
-    public static final int FIND_PARENT = 114;
+    public static final int FIND_PARENT_NODES = 114;
 
-    public static final int FIND_FOLLOWING_SIBLING=115;
+    public static final int FIND_FOLSIB_NODES = 115;
 
-    public static final int FIND_NODES_BY_UID=116;
-    
-    public static final int SHARE_NODES=117;
+    public static final int FIND_NODES_BY_UID = 116;
+
+    public static final int SHARE_NODES = 117;
+
+    public static final int FIND_CHILD_PNODES = 118;
+
+    public static final int FIND_DESCENDANT_PNODES = 119;
+
+    public static final int FIND_PARENT_PNODES = 120;
+
+    public static final int FIND_FOLSIB_PNODES = 121;
+
+    public static final int FIND_PNODES_BY_UID = 126;
+
+    public static final int SHARE_PNODES = 122;
 
     public void setCode(int code);
 

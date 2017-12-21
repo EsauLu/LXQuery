@@ -19,7 +19,7 @@ import esau.lxq.utils.Utils;
 
 public class QueryExecutor {
 
-    private int partialTreesNum = 0;
+    private int p = 0;
 
     private List<Integer> pidList;
 
@@ -29,12 +29,10 @@ public class QueryExecutor {
         super();
         this.pidList = pidList;
         this.clientManager = clientManager;
-        this.partialTreesNum = pidList.size();
+        this.p = pidList.size();
     }
 
     public List<List<Node>> query(Step steps) {
-
-        int p = partialTreesNum;
 
         List<List<Node>> resultList = new ArrayList<List<Node>>();
 
@@ -47,7 +45,7 @@ public class QueryExecutor {
             clientManager.sendRequest(pid, request);
             LxqResponse response = clientManager.getResponse(pid);
             List<String> result = response.getResultList();
-            tem.add(Node.parse(result.get(0)));
+            tem.add(Node.parseNode(result.get(0)));
             resultList.add(tem);
         }
 
@@ -107,7 +105,7 @@ public class QueryExecutor {
     public List<List<Node>> queryChid(List<List<Node>> inputLists, String test) {
 
         LxqRequest request = new LxqRequestImpl();
-        request.setCode(LxqRequest.FIND_CHILD);
+        request.setCode(LxqRequest.FIND_CHILD_PNODES);
         request.setMsg(test);
 
         return sendFindRequests(request, inputLists);
@@ -117,7 +115,7 @@ public class QueryExecutor {
     public List<List<Node>> queryDescendant(List<List<Node>> inputLists, String test) {
 
         LxqRequest request = new LxqRequestImpl();
-        request.setCode(LxqRequest.FIND_DESCENDANT);
+        request.setCode(LxqRequest.FIND_DESCENDANT_PNODES);
         request.setMsg(test);
 
         return sendFindRequests(request, inputLists);
@@ -126,7 +124,7 @@ public class QueryExecutor {
 
     public List<List<Node>> queryParentIgnoreCNode(List<List<Node>> inputLists, String test) {
         LxqRequest request = new LxqRequestImpl();
-        request.setCode(LxqRequest.FIND_PARENT);
+        request.setCode(LxqRequest.FIND_PARENT_PNODES);
         request.setMsg(test);
         return sendFindRequests(request, inputLists);
 
@@ -138,7 +136,7 @@ public class QueryExecutor {
     }
 
     private List<List<Node>> sendFindRequests(LxqRequest request, List<List<Node>> inputLists) {
-        int p = pidList.size();
+
         for (int i = 0; i < p; i++) {
             int pid = pidList.get(i);
             List<Node> input = inputLists.get(i);
@@ -155,7 +153,6 @@ public class QueryExecutor {
 
         List<Node> toBeShare = new ArrayList<Node>();
 
-        int p = pidList.size();
         for (int i = 0; i < p; i++) {
             for (Node node : nodeLists.get(i)) {
                 if (!NodeType.CLOSED_NODE.equals(node.getType())) {
@@ -165,7 +162,7 @@ public class QueryExecutor {
         }
 
         LxqRequest request = new LxqRequestImpl();
-        request.setCode(LxqRequest.SHARE_NODES);
+        request.setCode(LxqRequest.SHARE_PNODES);
         request.setInputList(ListUtils.convertNodeList(toBeShare));
         clientManager.sendRequests(request);
 
@@ -189,11 +186,9 @@ public class QueryExecutor {
 
     public List<List<Node>> queryFollowingSibling(List<List<Node>> inputLists, String test) {
 
-        int p = pidList.size();
-
         // Local query
         LxqRequest request = new LxqRequestImpl();
-        request.setCode(LxqRequest.FIND_FOLLOWING_SIBLING);
+        request.setCode(LxqRequest.FIND_FOLSIB_PNODES);
         request.setMsg(test);
         List<List<Node>> outputList = sendFindRequests(request, inputLists);
 
@@ -225,7 +220,7 @@ public class QueryExecutor {
     
     private List<RemoteNode> prepareRemoteQuery(List<List<Node>> inputLists) {
         // TODO Auto-generated method stub
-        int p=pidList.size();
+
         List<List<Node>> parentList = new ArrayList<>();
         List<RemoteNode> toBeQueried = new ArrayList<RemoteNode>();
         for (int i = 0; i < p; i++) {
@@ -254,7 +249,7 @@ public class QueryExecutor {
     
     private List<List<Node>> regroupNodes(List<RemoteNode> toBeQueried){
         List<List<Node>> remoteInputList = new ArrayList<>();
-        int p=pidList.size();
+
         for(int i=0;i<p;i++) {
             List<Node> remoteInput=new ArrayList<>();
             Map<Long, Node> map=new HashMap<>();
