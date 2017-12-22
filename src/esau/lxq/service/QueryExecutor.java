@@ -17,9 +17,8 @@ import esau.lxq.entry.Step;
 import esau.lxq.net.LxqRequest;
 import esau.lxq.net.LxqResponse;
 import esau.lxq.net.impl.LxqRequestImpl;
-import esau.lxq.utils.Utils;
 
-public class PQueryExecutor {
+public class QueryExecutor {
 
     private int p;
 
@@ -27,7 +26,7 @@ public class PQueryExecutor {
 
     private ClientManager clientManager;
 
-    public PQueryExecutor(List<Integer> pidList, ClientManager clientManager) {
+    public QueryExecutor(List<Integer> pidList, ClientManager clientManager) {
         super();
         this.pidList = pidList;
         this.clientManager = clientManager;
@@ -92,17 +91,6 @@ public class PQueryExecutor {
 
         Step pstep = psteps;
 
-        System.out.println();
-        System.out.println("Predicate : " + psteps.toXPath());
-        System.out.println();
-        System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
-        System.out.println();
-        System.out.println("inputs : ");
-        System.out.println();
-        Utils.printPNodeList(inputLists);
-        System.out.println();
-        System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
-
         while (pstep != null) {
 
             resultLists = pQueryWithAixs(pstep.getAxis(), resultLists, pstep.getNameTest());
@@ -111,8 +99,6 @@ public class PQueryExecutor {
             if (predicate != null) {
 
                 // Querying predicate. his block will be executed when a query has a predicate.
-
-                System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
 
                 List<List<PNode>> intermadiate = regroupResults(resultLists);
 
@@ -123,10 +109,6 @@ public class PQueryExecutor {
                 resultLists = filterResults(resultLists, nodeLists);
 
             }
-
-            System.out.println();
-            System.out.println("Predicate Step" + " : " + pstep);
-            Utils.printPNodeList(resultLists);
 
             pstep = pstep.getNext();
 
@@ -251,30 +233,14 @@ public class PQueryExecutor {
         request.setMsg(test);
         List<List<PNode>> outputList = sendFindRequests(request, inputLists);
 
-        System.out.println("local query:");
-        Utils.printPNodeList(outputList);
-        System.out.println();
-
         // Preparing remote query
         List<RemoteNode> toBeQueried = prepareRemoteQuery(inputLists);
-
-        System.out.println("toBeQueried:");
-        Utils.printRemoteNods(toBeQueried);
-        System.out.println();
 
         // Regroup nodes by partial tree id
         List<List<PNode>> remoteInputList = regroupNodes(toBeQueried);
 
-        System.out.println("remoteInputList:");
-        Utils.printPNodeList(remoteInputList);
-        System.out.println();
-
         // Remote query
         List<List<PNode>> remoteOutputList = queryChid(remoteInputList, test);
-
-        System.out.println("remoteOutputList:");
-        Utils.printPNodeList(remoteOutputList);
-        System.out.println();
 
         // Merge results of local query and remote query
         for (int i = 0; i < p; i++) {
@@ -288,10 +254,6 @@ public class PQueryExecutor {
             result.clear();
             result.addAll(set);
         }
-
-        System.out.println("merge result:");
-        Utils.printPNodeList(outputList);
-        System.out.println();
 
         return outputList;
 
@@ -318,10 +280,6 @@ public class PQueryExecutor {
 
         // query parent nodes
         parentList = queryParentIgnoreCNode(parentList, "*");
-
-        System.out.println("parent pnodes");
-        Utils.printPNodeList(parentList);
-        System.out.println();
 
         // collecting toBeQueried node list
         for (int i = 0; i < p; i++) {

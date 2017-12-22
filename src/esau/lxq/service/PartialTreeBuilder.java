@@ -5,7 +5,9 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.RandomAccessFile;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -17,6 +19,7 @@ import esau.lxq.entry.Node;
 import esau.lxq.net.LxqRequest;
 import esau.lxq.net.LxqResponse;
 import esau.lxq.net.impl.LxqRequestImpl;
+import sun.print.resources.serviceui_fr;
 
 public class PartialTreeBuilder {
 
@@ -157,16 +160,102 @@ public class PartialTreeBuilder {
 
     private void dispatchXMLDocument(String xmlDocPath) {
 
-        StringBuffer xml = readXMLDocument(xmlDocPath);
-        List<String> chunks = getChunks(xml);
+        // StringBuffer xml = readXMLDocument(xmlDocPath);
+        // List<String> chunks = getChunks(xml);
+        //
+        // clientManager.sendChunks(pidList, chunks);
 
-        clientManager.sendChunks(pidList, chunks);
+        File file = new File(xmlDocPath);
 
-        // clientManager.getResponseList(pidList);
+        BufferedInputStream bis = null;
+        try {
+
+            bis=new BufferedInputStream(new FileInputStream(file));
+            System.out.println("file length : "+file.length());
+            long[] pos=getPos(file.length(), workerNum);
+            dispatchXMLDocument(bis, pos);
+            
+        } catch (Exception e) {
+            // TODO: handle exception
+            e.printStackTrace();
+        } finally {
+            // TODO: handle finally clause
+            try {
+                if (bis != null) {
+                    bis.close();
+                }
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
 
     }
 
-    public List<String> getChunks(StringBuffer xml) {
+    private void dispatchXMLDocument(BufferedInputStream bis, long[] pos) throws IOException {
+        
+        int len = 0;
+        int buffSize = 8192;
+        byte[] buff = new byte[buffSize];
+
+        System.out.println("dispatcher");
+        
+        for(long pp:pos) {
+            System.out.println(pp);
+        }
+        
+        int currPos = 0;
+        for (int i = 0; i < pos.length; i++) {
+            int nextlen = (int) Math.min(pos[i] - currPos, buffSize);
+            StringBuffer chunk = new StringBuffer();
+
+            System.out.println(currPos+" -- "+pos[i]+" -- "+pos.length);
+            
+            String s=null;
+            if(currPos<pos[i]) {
+
+                System.out.println(currPos+" -- "+pos[i]+" -- next len = "+nextlen);
+                while (currPos < pos[i] && (len = bis.read(buff, 0, nextlen)) != -1) {
+                    String t=new String(buff, 0, len);
+                    System.out.println("> "+t);
+                    chunk.append(t);
+                    currPos += len;
+                    nextlen = (int) Math.min(pos[i] - currPos, buffSize);
+                }
+                System.out.println(currPos+" -- "+pos[i]+" -2- next len = "+nextlen);
+
+                while ((len = bis.read(buff)) != -1) {
+                    currPos += len;
+                    s=new String(buff, 0, len);
+                    int k=s.indexOf('<');
+                    if(k!=-1) {                    
+                        chunk.append(s.substring(0, k));
+                        s=s.substring(k);
+                        break;                    
+                    }
+                    chunk.append(s);
+                    s=null;
+                }
+            }
+
+            int pid=pidList.get(i);
+//            clientManager.sendChunk(pid, chunk.toString());
+            
+            System.out.println("chunk " + i+" :");
+            System.out.println(chunk.toString());
+            System.out.println();
+            
+            chunk=new StringBuffer();
+            if(s!=null) {
+                chunk.append(s);
+            }            
+            
+        }
+//        clientManager.getResponseList(pidList);
+
+    }
+
+    public List<String> getChunksr(StringBuffer xml) {
 
         int[] pos = getPos(xml, workerNum);
 
@@ -179,8 +268,6 @@ public class PartialTreeBuilder {
             if (i == workerNum - 1) {
                 chunk += "</root>";
             }
-            System.out.println(chunk);
-            System.out.println("------");
             chunks.add(chunk);
         }
 
@@ -251,13 +338,13 @@ public class PartialTreeBuilder {
         return pos;
     }
 
-    private static long[] getPos(long len, int chunkNum) {
-        long[] pos = new long[chunkNum + 1];
-        long t = len / chunkNum + 1;
-        for (int i = 0; i < chunkNum; i++) {
-            pos[i] = i * t;
+    private long[] getPos(long len, int chunkNum) {
+        long[] pos = new long[chunkNum];
+        long t = (len + chunkNum) / chunkNum;
+        for (int i = 1; i < chunkNum; i++) {
+            pos[i - 1] = i * t;
         }
-        pos[chunkNum] = len;
+        pos[chunkNum - 1] = len;
         return pos;
     }
 

@@ -74,23 +74,25 @@ public class ClientManager {
         return clientsMap;
     }
 
-    public void sendChunks(List<Integer> pids, List<String> chunks) {
-
-        int p = pids.size();
-
-        for (int i = 0; i < p; i++) {
-
-            Integer pid = pids.get(i);
-            String chunk = chunks.get(i);
-
-            sendChunk(pid, chunk);
-
-        }
-        
-        getResponseList(pids);
-    }
+//    public void sendChunks(List<Integer> pids, List<String> chunks) {
+//
+//        int p = pids.size();
+//
+//        for (int i = 0; i < p; i++) {
+//
+//            Integer pid = pids.get(i);
+//            String chunk = chunks.get(i);
+//
+//            sendChunk(pid, chunk);
+//
+//        }
+//        
+//        getResponseList(pids);
+//    }
 
     public void sendChunk(int pid, String chunk) {
+        
+        System.out.println("chunk --> "+pid);
 
         LxqRequest request = new LxqRequestImpl();
         

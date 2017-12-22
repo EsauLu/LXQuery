@@ -18,7 +18,7 @@ public class Master {
 
     private PartialTreeBuilder builder;
 
-    private PQueryExecutor queryExecutor;
+    private QueryExecutor queryExecutor;
 
     private String[] xpaths = {
             // "/descendant::A[descendant::B/descendant::C/parent::B]"
@@ -31,10 +31,10 @@ public class Master {
             // "/descendant::C[following-sibling::D/parent::B/child::B]",
 
             "/child::A/descendant::B/descendant::C",
-//            "/child::A/descendant::B/descendant::C/parent::B",
-//            "/descendant::B/following-sibling::B",
-//             "/descendant::B[following-sibling::B/child::C]/child::C",
-//            "/descendant::D[parent::B[descendant::E]]" 
+            "/child::A/descendant::B/descendant::C/parent::B",
+            "/descendant::B/following-sibling::B",
+             "/descendant::B[following-sibling::B/child::C]/child::C",
+            "/descendant::D[parent::B[descendant::E]]" 
         };
 
     public Master() {
@@ -58,30 +58,30 @@ public class Master {
         builder = new PartialTreeBuilder(workerNum, pidList, clientManager);
         builder.build();
 
-        queryExecutor = new PQueryExecutor(pidList, clientManager);
-
-        for (String xpath : xpaths) {
-
-            System.out.println("-----------------------------------------------------");
-            System.out.println();
-            System.out.println("XPath : " + xpath);
-            System.out.println();
-            System.out.println("------------------------------");
-
-            Step steps = XPathParser.parseXpath(xpath);
-
-            List<List<Node>> resultLists = queryExecutor.query(steps);
-
-            System.out.println("==============================");
-            System.out.println();
-            System.out.println("Final results :");
-            System.out.println();
-
-            Utils.print(resultLists);
-
-            System.out.println("====================================================================================");
-
-        }
+//        queryExecutor = new QueryExecutor(pidList, clientManager);
+//
+//        for (String xpath : xpaths) {
+//
+//            System.out.println("-----------------------------------------------------");
+//            System.out.println();
+//            System.out.println("XPath : " + xpath);
+//            System.out.println();
+//            System.out.println("------------------------------");
+//
+//            Step steps = XPathParser.parseXpath(xpath);
+//
+//            List<List<Node>> resultLists = queryExecutor.query(steps);
+//
+//            System.out.println("==============================");
+//            System.out.println();
+//            System.out.println("Final results :");
+//            System.out.println();
+//
+//            Utils.print(resultLists);
+//
+//            System.out.println("====================================================================================");
+//
+//        }
 
     }
 
