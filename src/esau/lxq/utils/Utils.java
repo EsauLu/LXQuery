@@ -278,6 +278,13 @@ public class Utils {
         System.out.println();
     }
 
+    public static void printPNods(List<PNode> list) {
+        for (PNode node : list) {
+            System.out.print(node);
+        }
+        System.out.println();
+    }
+
     public static void printRemoteNods(List<RemoteNode> list) {
         for (RemoteNode node : list) {
             System.out.println(node);

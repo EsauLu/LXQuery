@@ -33,6 +33,7 @@ public class QueryExecutor {
         this.p = pidList.size();
     }
 
+
     public List<List<Node>> query(Step steps) {
 
         List<List<Node>> resultList = new ArrayList<List<Node>>();
@@ -58,14 +59,14 @@ public class QueryExecutor {
             Step predicate = step.getPredicate();
             if (predicate != null) {
                 // Querying predicate. his block will be executed when a query has a predicate.
-                
-                PQueryExecutor pQueryExecutor=new PQueryExecutor(pidList, clientManager);
 
-                 List<List<PNode>> intermadiate=pQueryExecutor.preparePredicate(resultList);
-                
-                 intermadiate=pQueryExecutor.predicateQuery(predicate, intermadiate);
-                
-                 resultList=pQueryExecutor.proccessPredicate(intermadiate);
+                PQueryExecutor pQueryExecutor = new PQueryExecutor(pidList, clientManager);
+
+                List<List<PNode>> intermadiate = pQueryExecutor.preparePredicate(resultList);
+
+                intermadiate = pQueryExecutor.predicateQuery(predicate, intermadiate);
+
+                resultList = pQueryExecutor.proccessPredicate(intermadiate);
 
             }
 
@@ -191,7 +192,7 @@ public class QueryExecutor {
 
         // Local query
         LxqRequest request = new LxqRequestImpl();
-        request.setCode(LxqRequest.FIND_FOLSIB_PNODES);
+        request.setCode(LxqRequest.FIND_FOLSIB_NODES);
         request.setMsg(test);
         List<List<Node>> outputList = sendFindRequests(request, inputLists);
 
@@ -220,7 +221,7 @@ public class QueryExecutor {
         return outputList;
 
     }
-    
+
     private List<RemoteNode> prepareRemoteQuery(List<List<Node>> inputLists) {
         // TODO Auto-generated method stub
 
@@ -238,7 +239,7 @@ public class QueryExecutor {
             parentList.add(tem);
 
         }
-        
+
         parentList = queryParentIgnoreCNode(parentList, "*");
         for (int i = 0; i < p; i++) {
             for (Node parent : parentList.get(i)) {
@@ -249,18 +250,18 @@ public class QueryExecutor {
         }
         return toBeQueried;
     }
-    
-    private List<List<Node>> regroupNodes(List<RemoteNode> toBeQueried){
+
+    private List<List<Node>> regroupNodes(List<RemoteNode> toBeQueried) {
         List<List<Node>> remoteInputList = new ArrayList<>();
 
-        for(int i=0;i<p;i++) {
-            List<Node> remoteInput=new ArrayList<>();
-            Map<Long, Node> map=new HashMap<>();
-            for(int j=0;j<toBeQueried.size();j++) {
-                RemoteNode remoteNode=toBeQueried.get(j);
+        for (int i = 0; i < p; i++) {
+            List<Node> remoteInput = new ArrayList<>();
+            Map<Long, Node> map = new HashMap<>();
+            for (int j = 0; j < toBeQueried.size(); j++) {
+                RemoteNode remoteNode = toBeQueried.get(j);
                 if (remoteNode.st <= i && remoteNode.ed >= i) {
-                    Node node=remoteNode.getNode();
-                    if(!map.containsKey(node.getUid())) {
+                    Node node = remoteNode.getNode();
+                    if (!map.containsKey(node.getUid())) {
                         map.put(node.getUid(), node);
                     }
                 }

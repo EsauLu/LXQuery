@@ -38,21 +38,21 @@ public class ControllerImpl implements Controller {
             String chunk = request.getChunk();
             worker.buildSubtrees(msg, chunk);
 
-            response.setMsg("Subtrees");
+            response.setMsg("CHUNK");
             response.setResultList(worker.getSubTreesResponse());
 
             break;
 
         case LxqRequest.LEFT_OPEN_NODES:
 
-            response.setMsg("Left open nodes");
+            response.setMsg("LEFT_OPEN_NODES");
             response.setResultList(worker.selectLeftOpenNode());
 
             break;
 
         case LxqRequest.RIGHT_OPEN_NODES:
 
-            response.setMsg("Right open nodes");
+            response.setMsg("RIGHT_OPEN_NODES");
             response.setResultList(worker.selectRightOpenNode());
 
             break;
@@ -74,13 +74,13 @@ public class ControllerImpl implements Controller {
             
             worker.computRangs(rangsList);
             
-            response.setMsg("Open nodes");
+            response.setMsg("COMPUTE_RANGS");
             response.setResultList(worker.getOpenNodes());
 
             break;
 
         case LxqRequest.GET_ROOT:{            
-            response.setMsg("ROOT");
+            response.setMsg("GET_ROOT");
             response.setResultList(worker.getRoot());
 
             break;
@@ -92,7 +92,7 @@ public class ControllerImpl implements Controller {
             List<String> inputList=request.getInputList();
             List<Node> resultList=pt.findChildNodes(ListUtils.recoverNodeList(inputList), msg);
             
-            response.setMsg("childs");
+            response.setMsg("FIND_CHILD_NODES");
             response.setResultList(ListUtils.convertNodeList(resultList));
             
             break;
@@ -104,7 +104,7 @@ public class ControllerImpl implements Controller {
             List<String> inputList=request.getInputList();
             List<Node> resultList=pt.findDescendantNodes(ListUtils.recoverNodeList(inputList), msg);
             
-            response.setMsg("descendant");
+            response.setMsg("FIND_DESCENDANT_NODES");
             response.setResultList(ListUtils.convertNodeList(resultList));
             
             break;
@@ -116,7 +116,7 @@ public class ControllerImpl implements Controller {
             List<String> inputList=request.getInputList();
             List<Node> resultList=pt.findParentNodes(ListUtils.recoverNodeList(inputList), msg);
             
-            response.setMsg("parents");
+            response.setMsg("FIND_PARENT_NODES");
             response.setResultList(ListUtils.convertNodeList(resultList));
             
             break;
@@ -128,7 +128,7 @@ public class ControllerImpl implements Controller {
             List<String> inputList=request.getInputList();
             List<Node> resultList=pt.findCorrespondingNodes(ListUtils.recoverNodeList(inputList));
             
-            response.setMsg("Share nodes");
+            response.setMsg("SHARE_NODES");
             response.setResultList(ListUtils.convertNodeList(resultList));
             
             break;
@@ -140,7 +140,7 @@ public class ControllerImpl implements Controller {
             List<String> inputList=request.getInputList();
             List<Node> resultList=pt.findFolSibNodes(ListUtils.recoverNodeList(inputList), msg);
             
-            response.setMsg("following sibling");
+            response.setMsg("FIND_FOLSIB_NODES");
             response.setResultList(ListUtils.convertNodeList(resultList));
             
             break;
@@ -153,7 +153,7 @@ public class ControllerImpl implements Controller {
             
             List<Node> resultList=pt.findNodesByUid(ListUtils.recoverNodeList(inputList));
             
-            response.setMsg("Nodes");
+            response.setMsg("FIND_NODES_BY_UID");
             response.setResultList(ListUtils.convertNodeList(resultList));
             
             break;
@@ -165,7 +165,7 @@ public class ControllerImpl implements Controller {
             List<String> inputList=request.getInputList();
             List<PNode> resultList=pt.findChildPNodes(ListUtils.recoverPNodeList(inputList), msg);
             
-            response.setMsg("childs");
+            response.setMsg("FIND_CHILD_PNODES");
             response.setResultList(ListUtils.convertPNodeList(resultList));
             
             break;
@@ -178,7 +178,7 @@ public class ControllerImpl implements Controller {
             List<String> inputList=request.getInputList();
             List<PNode> resultList=pt.findDescendantPNodes(ListUtils.recoverPNodeList(inputList), msg);
             
-            response.setMsg("descendant");
+            response.setMsg("FIND_DESCENDANT_PNODES");
             response.setResultList(ListUtils.convertPNodeList(resultList));
                
             break;
@@ -190,7 +190,7 @@ public class ControllerImpl implements Controller {
             List<String> inputList=request.getInputList();
             List<PNode> resultList=pt.findParentPNodes(ListUtils.recoverPNodeList(inputList), msg);
             
-            response.setMsg("parents");
+            response.setMsg("FIND_PARENT_PNODES");
             response.setResultList(ListUtils.convertPNodeList(resultList));
             
             break;
@@ -202,7 +202,7 @@ public class ControllerImpl implements Controller {
             List<String> inputList=request.getInputList();
             List<PNode> resultList=pt.findCorrespondingPNodes(ListUtils.recoverPNodeList(inputList));
             
-            response.setMsg("Share nodes");
+            response.setMsg("SHARE_PNODES");
             response.setResultList(ListUtils.convertPNodeList(resultList));
               
             break;
@@ -212,9 +212,14 @@ public class ControllerImpl implements Controller {
             PartialTree pt=worker.getPartialTree();
             
             List<String> inputList=request.getInputList();
+            System.out.println("findFolSibPNodes String");
+            for(String item: inputList) {
+                System.out.println(item);
+            }
+            System.out.println();
             List<PNode> resultList=pt.findFolSibPNodes(ListUtils.recoverPNodeList(inputList), msg);
             
-            response.setMsg("following sibling");
+            response.setMsg("FIND_FOLSIB_PNODES");
             response.setResultList(ListUtils.convertPNodeList(resultList));
             
             break;

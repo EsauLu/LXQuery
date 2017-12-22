@@ -34,6 +34,41 @@ public class PQueryExecutor {
         this.p = pidList.size();
     }
 
+    public List<List<Node>> query(Step steps) {
+
+        List<List<Node>> resultList = new ArrayList<List<Node>>();
+
+        LxqRequest request = new LxqRequestImpl();
+        request.setCode(LxqRequest.GET_ROOT);
+
+        for (int i = 0; i < p; i++) {
+            List<Node> tem = new ArrayList<>();
+            int pid = pidList.get(i);
+            clientManager.sendRequest(pid, request);
+            LxqResponse response = clientManager.getResponse(pid);
+            List<String> result = response.getResultList();
+            tem.add(Node.parseNode(result.get(0)));
+            resultList.add(tem);
+        }
+
+        List<List<PNode>> intermadiate = preparePredicate(resultList);
+
+        intermadiate = predicateQuery(steps, intermadiate);
+
+        for (int i = 0; i < p; i++) {
+            List<PNode> pList = intermadiate.get(i);
+            List<Node> result = resultList.get(i);
+            Set<Node> set = new HashSet<>();
+            for (PNode pNode : pList) {
+                set.add(pNode.getNode());
+            }
+            result.clear();
+            result.addAll(set);
+        }
+
+        return resultList;
+    }
+
     public List<List<PNode>> preparePredicate(List<List<Node>> inputLists) {
 
         List<List<PNode>> outputLists = new ArrayList<List<PNode>>();
@@ -58,7 +93,7 @@ public class PQueryExecutor {
         Step pstep = psteps;
 
         System.out.println();
-        System.out.println("Predicate : "+psteps.toXPath());
+        System.out.println("Predicate : " + psteps.toXPath());
         System.out.println();
         System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
         System.out.println();
@@ -78,7 +113,7 @@ public class PQueryExecutor {
                 // Querying predicate. his block will be executed when a query has a predicate.
 
                 System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
-                
+
                 List<List<PNode>> intermadiate = regroupResults(resultLists);
 
                 intermadiate = predicateQuery(predicate, intermadiate);
@@ -89,9 +124,9 @@ public class PQueryExecutor {
 
             }
 
-             System.out.println();
-             System.out.println("Predicate Step" + " : " + pstep);
-             Utils.printPNodeList(resultLists);
+            System.out.println();
+            System.out.println("Predicate Step" + " : " + pstep);
+            Utils.printPNodeList(resultLists);
 
             pstep = pstep.getNext();
 
@@ -186,7 +221,7 @@ public class PQueryExecutor {
         }
 
         LxqRequest request = new LxqRequestImpl();
-        request.setCode(LxqRequest.SHARE_NODES);
+        request.setCode(LxqRequest.SHARE_PNODES);
         request.setInputList(ListUtils.convertPNodeList(toBeShare));
         clientManager.sendRequests(request);
 
@@ -216,14 +251,30 @@ public class PQueryExecutor {
         request.setMsg(test);
         List<List<PNode>> outputList = sendFindRequests(request, inputLists);
 
+        System.out.println("local query:");
+        Utils.printPNodeList(outputList);
+        System.out.println();
+
         // Preparing remote query
         List<RemoteNode> toBeQueried = prepareRemoteQuery(inputLists);
+
+        System.out.println("toBeQueried:");
+        Utils.printRemoteNods(toBeQueried);
+        System.out.println();
 
         // Regroup nodes by partial tree id
         List<List<PNode>> remoteInputList = regroupNodes(toBeQueried);
 
+        System.out.println("remoteInputList:");
+        Utils.printPNodeList(remoteInputList);
+        System.out.println();
+
         // Remote query
         List<List<PNode>> remoteOutputList = queryChid(remoteInputList, test);
+
+        System.out.println("remoteOutputList:");
+        Utils.printPNodeList(remoteOutputList);
+        System.out.println();
 
         // Merge results of local query and remote query
         for (int i = 0; i < p; i++) {
@@ -238,6 +289,10 @@ public class PQueryExecutor {
             result.addAll(set);
         }
 
+        System.out.println("merge result:");
+        Utils.printPNodeList(outputList);
+        System.out.println();
+
         return outputList;
 
     }
@@ -247,8 +302,9 @@ public class PQueryExecutor {
 
         List<List<PNode>> parentList = new ArrayList<>();
         List<RemoteNode> toBeQueried = new ArrayList<RemoteNode>();
-        for (int i = 0; i < p; i++) {
 
+        // the nodes which need to be query its parent.
+        for (int i = 0; i < p; i++) {
             List<PNode> tem = new ArrayList<>();
             List<PNode> input = inputLists.get(i);
             for (PNode pNode : input) {
@@ -258,15 +314,22 @@ public class PQueryExecutor {
                 }
             }
             parentList.add(tem);
-
         }
 
+        // query parent nodes
         parentList = queryParentIgnoreCNode(parentList, "*");
+
+        System.out.println("parent pnodes");
+        Utils.printPNodeList(parentList);
+        System.out.println();
+
+        // collecting toBeQueried node list
         for (int i = 0; i < p; i++) {
             for (PNode pNode : parentList.get(i)) {
                 Node parent = pNode.getNode();
+                Link link = pNode.getLink();
                 if (parent.isRightOpenNode() || parent.isPreOpenNode()) {
-                    toBeQueried.add(new RemoteNode(parent, i + 1, parent.getEnd()));
+                    toBeQueried.add(new RemoteNode(parent, i + 1, parent.getEnd(), link));
                 }
             }
         }
@@ -278,17 +341,15 @@ public class PQueryExecutor {
 
         for (int i = 0; i < p; i++) {
             List<PNode> remoteInput = new ArrayList<>();
-            Map<Long, PNode> map = new HashMap<>();
+            Set<PNode> set = new HashSet<>();
             for (int j = 0; j < toBeQueried.size(); j++) {
                 RemoteNode remoteNode = toBeQueried.get(j);
                 if (remoteNode.st <= i && remoteNode.ed >= i) {
                     Node node = remoteNode.getNode();
-                    if (!map.containsKey(node.getUid())) {
-                        // map.put(node.getUid(), node);
-                    }
+                    set.add(new PNode(node, remoteNode.getLink()));
                 }
             }
-            remoteInput.addAll(map.values());
+            remoteInput.addAll(set);
             remoteInputList.add(remoteInput);
         }
         return remoteInputList;
@@ -387,7 +448,7 @@ public class PQueryExecutor {
             }
         }
 
-        LxqRequest request=new LxqRequestImpl();
+        LxqRequest request = new LxqRequestImpl();
         request.setCode(LxqRequest.FIND_NODES_BY_UID);
         for (int i = 0; i < p; i++) {
             int pid = pidList.get(i);
@@ -395,7 +456,7 @@ public class PQueryExecutor {
             request.setInputList(ListUtils.convertNodeList(uids));
             clientManager.sendRequest(pid, request);
         }
-        List<LxqResponse> responses=clientManager.getResponseList(pidList);
+        List<LxqResponse> responses = clientManager.getResponseList(pidList);
         List<List<Node>> resultLists = ListUtils.recoverNodeListByResponse(responses);
 
         return shareNodes(resultLists);
