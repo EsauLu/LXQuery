@@ -1,0 +1,42 @@
+package esau.lxq.net;
+
+import java.util.ResourceBundle;
+
+public class ControllerFactory {
+
+    private static ResourceBundle bundle = ResourceBundle.getBundle("server");
+
+    public static Controller getController() {
+        String className="esau.lxq.net.impl.DefaultController";
+        
+        try {
+            
+            className = bundle.getString("ctrl");
+            if(className==null||className.isEmpty()){
+                className="esau.lxq.net.impl.DefaultController";
+            }
+
+            Object obj = Class.forName(className).newInstance();
+            
+            return (Controller) obj;
+
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            className="esau.lxq.net.impl.DefaultController";
+        }
+
+        try {
+
+            Object obj = Class.forName(className).newInstance();
+            
+            return (Controller) obj;
+
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        
+        return null;
+    }
+
+}
