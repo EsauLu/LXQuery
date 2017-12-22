@@ -34,6 +34,10 @@ public class Worker {
         return list;
     }
     
+    public PartialTree getPartialTree() {
+        return pt;
+    }
+    
     public void computRangs(List<String> inputs){
         
         List<Node> rangsList=ListUtils.recoverNodeList(inputs);
@@ -117,6 +121,10 @@ public class Worker {
 
             while (p != null) {
 
+                if(p.isClosedNode()) {
+                    p.setStart(pid);
+                    p.setEnd(pid);
+                }
                 if (p.isChecked() == false) {
                     p.setUid(uid++);
                 }

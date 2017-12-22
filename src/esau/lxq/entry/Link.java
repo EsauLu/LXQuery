@@ -33,6 +33,28 @@ public class Link {
     public void setUid(long uid) {
         this.uid = uid;
     }
+    
+    public String toText() {
+        return pid+","+uid;
+    }
+    
+    public static Link parseLink(String text) {
+        if(text==null||text.isEmpty()) {
+            return null;
+        }
+        
+        try {
+            String[] params=text.split(",");
+            int pid=Integer.parseInt(params[0]);
+            int uid=Integer.parseInt(params[1]);
+            return new Link(pid, uid);
+        } catch (Exception e) {
+            // TODO: handle exception
+        }
+        
+        return null;
+        
+    }
 
     @Override
     public String toString() {
