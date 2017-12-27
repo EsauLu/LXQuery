@@ -54,19 +54,15 @@ public class LxqResponseImpl implements LxqResponse {
 
         StringBuffer sb = new StringBuffer();
 
-        sb.append(msg);
+        sb.append("msg : " + msg);
 
-        if (resultList != null && resultList.size() > 0) {
-            sb.append("\n\n");
-            for (String item : resultList) {
-                sb.append(item);
-                sb.append("\n");
-            }
-        }
+        sb.append("\n\n");
+
+        sb.append("resultList : " + resultList == null ? "null" : resultList.size());
 
         return sb.toString().trim();
     }
-    
+
     @Override
     public String toMsgText() {
         // TODO Auto-generated method stub
@@ -79,7 +75,7 @@ public class LxqResponseImpl implements LxqResponse {
                 sb.append(item);
                 sb.append("\n");
             }
-        }else{
+        } else {
             sb.append("null");
         }
 

@@ -19,7 +19,7 @@ import esau.lxq.net.ControllerFactory;
 public class LxqServerImpl implements LxqServer {
 
     private ServerSocket server;
-    
+
     private Controller ctrl = ControllerFactory.getController();
 
     private String IP;
@@ -28,6 +28,8 @@ public class LxqServerImpl implements LxqServer {
     private boolean isClose = false;
 
     private int bufferSize = 8192;
+
+    private boolean isChunk = false;
 
     public LxqServerImpl() {
         // TODO Auto-generated constructor stub
@@ -50,8 +52,8 @@ public class LxqServerImpl implements LxqServer {
         try {
 
             server = new ServerSocket(port, 1, InetAddress.getByName(IP));
-            
-            System.out.println("Local : "+IP+":"+port);
+
+            System.out.println("Local : " + IP + ":" + port);
 
             while (isClose == false) {
 
@@ -76,11 +78,23 @@ public class LxqServerImpl implements LxqServer {
             InputStream in = socket.getInputStream();
             OutputStream out = socket.getOutputStream();
 
-            LxqRequest request = getRequest(in);            
+            LxqRequest request = null;
+            if (isChunk) {
+                request = new LxqRequestImpl();
+                request.setCode(LxqRequest.RECEIVE_CHUNK);
+                request.setInputStream(in);
+                isChunk = false;
+            } else {
+                request = getRequest(in);
+                if (request.getCode() == LxqRequest.CHUNK) {
+                    isChunk = true;
+                }
+            }
+
             LxqResponse response = new LxqResponseImpl();
 
             ctrl.deal(request, response);
-            
+
             print(out, response);
 
             in.close();
@@ -93,13 +107,13 @@ public class LxqServerImpl implements LxqServer {
         }
 
     }
-    
+
     private void print(OutputStream out, LxqResponse response) throws Exception {
-        
-        BufferedOutputStream bos=new BufferedOutputStream(out);
+
+        BufferedOutputStream bos = new BufferedOutputStream(out);
         bos.write(response.toMsgText().getBytes());
         bos.flush();
-        
+
     }
 
     private LxqRequest getRequest(InputStream in) throws Exception {
@@ -113,58 +127,46 @@ public class LxqServerImpl implements LxqServer {
             sb.append(new String(buff, 0, len));
         }
 
-        return parse(sb);
+        return parse(sb.toString());
     }
 
-    private LxqRequest parse(StringBuffer sb) {
+    private LxqRequest parse(String text) {
 
         LxqRequest request = new LxqRequestImpl();
-        
-        int k=sb.indexOf("\n\n");
-        int code=LxqRequest.NONE;
-        
-        if(k==-1){          
-            try {
-                code=Integer.parseInt(sb.toString().trim());
-            } catch (NumberFormatException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-            request.setCode(code);
-            return request;
-        }
 
-        String codeStr=sb.substring(0, k);
-        code=Integer.parseInt(codeStr);
+        // set code
+        int k = text.indexOf("\n\n");
+        String param = text.substring(0, k);
+        int code = LxqRequest.NONE;
+        try {
+            code = Integer.parseInt(param.trim());
+        } catch (NumberFormatException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
         request.setCode(code);
-        
-        String paramsStr=sb.substring(k+2);
-        
-        k=paramsStr.indexOf("\n\n");
-        if(k!=-1){
-            request.setMsg(paramsStr.substring(0, k));
-        }
-        
-        if(code==LxqRequest.CHUNK){
+        text = text.substring(k + 2);
 
-            request.setChunk(paramsStr);
-            
-        }else{
-            
-            if(k!=-1){
-                String nameTest=paramsStr.substring(0, k);
-                request.setMsg(nameTest);
-                
-                String inputListStr=paramsStr.substring(k+2).trim();
-                List<String> inputList=new ArrayList<String>();
-                for(String item: inputListStr.split("\n")){
-                    inputList.add(item);
-                }
-                request.setInputList(inputList);
-            }            
-            
+        // set msg
+        k = text.indexOf("\n\n");
+        param = text.substring(0, k);
+        request.setMsg(param);
+        text = text.substring(k + 2);
+
+        // set list
+        k = text.indexOf("\n\n");
+        param = text.substring(0, k);
+        String[] items = param.split("\n");
+        List<String> list=new ArrayList<>();
+        for (int i=1; i<items.length; i++) {            
+            list.add(items[i]);
         }
+        request.setInputList(list);
+        text = text.substring(k + 2);
         
+        //set chunk
+        request.setChunk(text);
+
         return request;
 
     }

@@ -1,5 +1,10 @@
 package esau.lxq.parser;
 
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
@@ -13,8 +18,9 @@ import esau.lxq.factory.NodeFactory;
 
 public class XMLParser {
 
-    public static List<Node> buildSubTrees(String chunk) {
-        List<Tag> tagList = getTagsByXML(chunk);
+    public static List<Node> buildSubTrees(String xmlDocPath) {
+        File file = new File(xmlDocPath);
+        List<Tag> tagList = getTagsByXML(file);
         return buildSubTreesByTags(tagList);
     }
 
@@ -73,10 +79,69 @@ public class XMLParser {
             if (i == -1 || j == -1) {
                 break;
             }
+            
+            Tag tag=getTag(chunkBuff.substring(i + 1, j));
+            if(tag!=null) {
+                tagList.add(tag);
+            }
 
-            tagList.add(getTag(chunkBuff.substring(i + 1, j)));
             chunkBuff.delete(0, j + 1);
 
+        }
+
+        return tagList;
+
+    }
+
+    public static List<Tag> getTagsByXML(File file) {
+
+        List<Tag> tagList = new ArrayList<Tag>();
+
+        int len = 0;
+        byte[] buff = new byte[8192];
+        BufferedInputStream bis = null;
+        StringBuffer chunkBuff = new StringBuffer();
+
+        try {
+
+            bis = new BufferedInputStream(new FileInputStream(file));
+            int i = -1, j = -1;
+            while (true) {
+
+                i = chunkBuff.indexOf("<");
+                j = chunkBuff.indexOf(">");
+                if (i == -1 || j == -1) {
+
+                    len = bis.read(buff);
+                    if (len == -1) {
+                        break;
+                    }
+                    String string = new String(buff, 0, len);
+                    chunkBuff.append(string);
+                    continue;
+
+                }
+                                
+                Tag tag=getTag(chunkBuff.substring(i + 1, j));
+                if(tag!=null) {
+                    tagList.add(tag);
+                }
+                
+                chunkBuff.delete(0, j + 1);
+
+            }
+
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } finally {
+            try {
+                if (bis != null) {
+                    bis.close();
+                }
+            } catch (Exception e2) {
+                // TODO: handle exception
+            }
         }
 
         return tagList;
@@ -92,11 +157,14 @@ public class XMLParser {
         Tag tag = new Tag();
 
         tagStr = tagStr.trim();
-        if (tagStr.charAt(0) == '/') {
+        char ch = tagStr.charAt(0);
+        if (ch == '/') {
             tagStr = tagStr.substring(1);
             tag.setType(TagType.END);
-        } else {
+        } else if ((ch >= 'a' && ch <= 'z') || (ch >= 'A' && ch <= 'Z')) {
             tag.setType(TagType.START);
+        } else {
+            return null;
         }
 
         int i = tagStr.indexOf(" ");

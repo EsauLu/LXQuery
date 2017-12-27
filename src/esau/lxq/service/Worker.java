@@ -44,6 +44,9 @@ public class Worker {
         
         for(Node n1: rangsList){
             Node n2=pt.findNodeByUid(n1.getUid());
+            if(n2==null) {
+                continue;
+            }
             n2.setStart(n1.getStart());
             n2.setEnd(n1.getEnd());
         }
@@ -53,6 +56,10 @@ public class Worker {
     public long computePrePath(String startUid, List<String> auxList) {
 
         long uid = Long.parseLong(startUid);
+        if(subtrees.size()==0) {
+            return uid;
+        }
+
         List<Node> pp = ListUtils.recoverNodeList(auxList);
 
         Node node = subtrees.get(0);
@@ -101,10 +108,6 @@ public class Worker {
 
         auxList.clear();
         auxList.addAll(ListUtils.convertNodeList(pp));
-
-        System.out.println("Partial trees : ");
-        Utils.dfsWithDepth(pt.getRoot());
-        System.out.println();
 
         return uid;
     }
@@ -195,13 +198,13 @@ public class Worker {
         return ListUtils.convertNodeList(rl);
 
     }
+    
+    public void setPid(int pid) {
+        this.pid = pid;
+    }
 
-    public void buildSubtrees(String msg, String chunk) {
-        try {
-            this.pid = Integer.parseInt(msg);
-        } catch (NumberFormatException e) {
-        }
-        this.subtrees = XMLParser.buildSubTrees(chunk);
+    public void buildSubtrees(String msg, String xmlDocPath) {
+        this.subtrees = XMLParser.buildSubTrees(xmlDocPath);
     }
 
     public void printSubTrees() {
@@ -235,33 +238,33 @@ public class Worker {
         return list;
     }
 
-    public List<String> getSubTreesResponse() {
-        List<String> list = new ArrayList<>();
-
-        for (Node root : subtrees) {
-            list.add(root.toBfsString());
-        }
-
-        if (pt.getRoot() != null) {
-            list.add("-");
-            list.add(pt.getRoot().toBfsString());
-        }
-
-        return list;
-    }
+//    public List<String> getSubTreesResponse() {
+//        List<String> list = new ArrayList<>();
+//
+//        for (Node root : subtrees) {
+//            list.add(root.toBfsString());
+//        }
+//
+//        if (pt.getRoot() != null) {
+//            list.add("-");
+//            list.add(pt.getRoot().toBfsString());
+//        }
+//
+//        return list;
+//    }
 
     public List<String> getResultResponse() {
         return null;
     }
 
-    public String responseSubTrees() {
-        StringBuffer sb = new StringBuffer();
-
-        for (Node root : subtrees) {
-            sb.append(root.toBfsString());
-            sb.append("\n");
-        }
-
-        return sb.toString().trim();
-    }
+//    public String responseSubTrees() {
+//        StringBuffer sb = new StringBuffer();
+//
+//        for (Node root : subtrees) {
+//            sb.append(root.toBfsString());
+//            sb.append("\n");
+//        }
+//
+//        return sb.toString().trim();
+//    }
 }

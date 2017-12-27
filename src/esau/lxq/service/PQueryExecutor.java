@@ -18,7 +18,7 @@ import esau.lxq.net.LxqRequest;
 import esau.lxq.net.LxqResponse;
 import esau.lxq.net.impl.LxqRequestImpl;
 
-public class QueryExecutor {
+public class PQueryExecutor {
 
     private int p;
 
@@ -26,7 +26,7 @@ public class QueryExecutor {
 
     private ClientManager clientManager;
 
-    public QueryExecutor(List<Integer> pidList, ClientManager clientManager) {
+    public PQueryExecutor(List<Integer> pidList, ClientManager clientManager) {
         super();
         this.pidList = pidList;
         this.clientManager = clientManager;
@@ -193,10 +193,13 @@ public class QueryExecutor {
 
         List<PNode> toBeShare = new ArrayList<PNode>();
 
+        Set<Long> teBeShareUid = new HashSet<>();
         for (int i = 0; i < p; i++) {
             for (PNode pNode : nodeLists.get(i)) {
                 Node node = pNode.getNode();
-                if (!NodeType.CLOSED_NODE.equals(node.getType())) {
+                if (!NodeType.CLOSED_NODE.equals(node.getType()) 
+                        && !teBeShareUid.contains(node.getUid())) {
+                    teBeShareUid.add(node.getUid());
                     toBeShare.add(pNode);
                 }
             }
@@ -424,9 +427,11 @@ public class QueryExecutor {
 
         List<Node> toBeShare = new ArrayList<Node>();
 
+        Set<Long> teBeShareUid = new HashSet<>();
         for (int i = 0; i < p; i++) {
             for (Node node : nodeLists.get(i)) {
-                if (!NodeType.CLOSED_NODE.equals(node.getType())) {
+                if (!NodeType.CLOSED_NODE.equals(node.getType()) && !teBeShareUid.contains(node.getUid())) {
+                    teBeShareUid.add(node.getUid());
                     toBeShare.add(node);
                 }
             }

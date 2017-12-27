@@ -302,10 +302,6 @@ public class PartialTree {
         List<PNode> outputList = new ArrayList<PNode>();
 
         setIsChecked(false);
-        
-        System.out.println("findFolSibPNodes");
-        Utils.printPNods(inputList);
-        System.out.println();
 
         for (int i = 0; i < inputList.size(); i++) {
 

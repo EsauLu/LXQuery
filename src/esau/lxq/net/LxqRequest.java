@@ -1,12 +1,17 @@
 package esau.lxq.net;
 
+import java.io.InputStream;
 import java.util.List;
 
 public interface LxqRequest {
 
     public static final int NONE = -1;
 
-    public static final int CHUNK = 100;
+    public static final int CHUNK = 98;
+
+    public static final int RECEIVE_CHUNK = 99;
+    
+    public static final int FILL_CHUNK = 100;
 
     public static final int LEFT_OPEN_NODES = 101;
 
@@ -59,5 +64,9 @@ public interface LxqRequest {
     public String getChunk();
 
     public String toMsgText();
+    
+    public InputStream getInputStream();
+    
+    public void setInputStream(InputStream in);
 
 }

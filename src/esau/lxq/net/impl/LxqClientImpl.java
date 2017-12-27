@@ -3,9 +3,13 @@ package esau.lxq.net.impl;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
+
+import com.sun.org.apache.bcel.internal.generic.NEW;
 
 import esau.lxq.net.LxqClient;
 import esau.lxq.net.LxqRequest;
@@ -31,7 +35,73 @@ public class LxqClientImpl implements LxqClient {
     }
 
     @Override
-    public boolean execute(LxqRequest request) {
+    public boolean commit(LxqRequest request, long size) {
+        // TODO Auto-generated method stub
+
+        if (!commit(request)) {
+            return false;
+        }
+
+        getResponse();
+
+        BufferedOutputStream bos = null;
+        try {
+
+            socket = new Socket(serverIP, port);
+            bos = new BufferedOutputStream(socket.getOutputStream());
+
+            InputStream inputStream = request.getInputStream();
+
+            int len = 0, nextLen = 0;
+            byte[] buff = new byte[8192];
+            long curr = 0;
+
+            String chunk = request.getChunk();
+            if (chunk != null && !chunk.contains("/")) {
+                bos.write(chunk.getBytes());
+            }
+
+            nextLen = Math.min(8192, (int) (size - curr));
+            while (curr < size && (len = inputStream.read(buff, 0, nextLen)) != -1) {
+                curr += len;
+                nextLen = Math.min(8192, (int) (size - curr));
+                bos.write(buff, 0, len);
+            }
+            
+            if (chunk != null && chunk.contains("/")) {
+                bos.write(chunk.getBytes());
+            }
+            
+            bos.flush();
+
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            return false;
+        } finally {
+            try {
+                if (socket != null) {
+                    socket.shutdownOutput();
+                }
+            } catch (Exception e2) {
+                // TODO: handle exception
+                e2.printStackTrace();
+                return false;
+            }
+        }
+
+        return true;
+
+    }
+
+    @Override
+    public OutputStream getOutputStream() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public boolean commit(LxqRequest request) {
         // TODO Auto-generated method stub
 
         if (socket != null) {
@@ -72,7 +142,7 @@ public class LxqClientImpl implements LxqClient {
     public LxqResponse getResponse() {
         // TODO Auto-generated method stub
 
-        if (socket == null) {
+        if (socket == null || socket.isClosed()) {
             return null;
         }
 
@@ -116,8 +186,8 @@ public class LxqClientImpl implements LxqClient {
         response = new LxqResponseImpl();
 
         int k = sb.indexOf("\n\n");
-        
-        if(k==-1){
+
+        if (k == -1) {
             response.setMsg(sb.toString().trim());
             return response;
         }

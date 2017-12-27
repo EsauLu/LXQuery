@@ -232,7 +232,7 @@ public class Node {
 
                 int uid = Integer.parseInt(fileds[0]);
                 String tagName = fileds[1];
-                NodeType type = NodeType.valueOf(fileds[2]);
+                NodeType type = NodeType.parseNodeType(fileds[2]);
                 int start = Integer.parseInt(fileds[3]);
                 int end = Integer.parseInt(fileds[4]);
                 Node node=new Node(uid, tagName, type, start, end);
@@ -286,21 +286,21 @@ public class Node {
         return Objects.hash(uid, tagName, type);
     }
 
-    public String toBfsString() {
-        String s = toString().trim();
-
-        String chs = "";
-        if (childList.size() > 0) {
-            for (int i = 0; i < childList.size() - 1; i++) {
-                chs += childList.get(i).toBfsString();
-                chs += ", ";
-            }
-            chs += childList.get(childList.size() - 1).toBfsString();
-
-            s += ":{" + chs + "}";
-        }
-
-        return s;
-    }
+//    public String toBfsString() {
+//        String s = toString().trim();
+//
+//        String chs = "";
+//        if (childList.size() > 0) {
+//            for (int i = 0; i < childList.size() - 1; i++) {
+//                chs += childList.get(i).toBfsString();
+//                chs += ", ";
+//            }
+//            chs += childList.get(childList.size() - 1).toBfsString();
+//
+//            s += ":{" + chs + "}";
+//        }
+//
+//        return s;
+//    }
 
 }

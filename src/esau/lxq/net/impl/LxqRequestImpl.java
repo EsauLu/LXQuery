@@ -1,5 +1,6 @@
 package esau.lxq.net.impl;
 
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,6 +15,8 @@ public class LxqRequestImpl implements LxqRequest {
     private List<String> inputList;
 
     private String chunk;
+
+    private InputStream in;
 
     @Override
     public void setCode(int code) {
@@ -62,126 +65,103 @@ public class LxqRequestImpl implements LxqRequest {
         // TODO Auto-generated method stub
         return chunk;
     }
-    
+
+    @Override
+    public InputStream getInputStream() {
+        // TODO Auto-generated method stub
+        return in;
+    }
+
+    @Override
+    public void setInputStream(InputStream in) {
+        // TODO Auto-generated method stub
+
+        this.in = in;
+
+    }
+
     public LxqRequest parse(String reqest) {
         // TODO Auto-generated method stub
         LxqRequest request = new LxqRequestImpl();
-        
-        int k=reqest.indexOf("\n\n");
-        
-        String codeStr=reqest.substring(0, k);
-        
-        int code=Integer.parseInt(codeStr);
+
+        int k = reqest.indexOf("\n\n");
+
+        String codeStr = reqest.substring(0, k);
+
+        int code = Integer.parseInt(codeStr);
         request.setCode(Integer.parseInt(codeStr));
-        
-        String paramsStr=reqest.substring(k+2);
-        
-        if(code==LxqRequest.CHUNK){
+
+        String paramsStr = reqest.substring(k + 2);
+
+        if (code == LxqRequest.CHUNK) {
 
             request.setChunk(paramsStr);
-            
-        }else{
-            
-            k=paramsStr.indexOf("\n\n");
-            
-            String nameTest=paramsStr.substring(0, k);
+
+        } else {
+
+            k = paramsStr.indexOf("\n\n");
+
+            String nameTest = paramsStr.substring(0, k);
             request.setMsg(nameTest);
-            
-            String inputListStr=paramsStr.substring(k+2).trim();
-            List<String> inputList=new ArrayList<String>();
-            for(String item: inputListStr.split("\n")){
+
+            String inputListStr = paramsStr.substring(k + 2).trim();
+            List<String> inputList = new ArrayList<String>();
+            for (String item : inputListStr.split("\n")) {
                 inputList.add(item);
             }
             request.setInputList(inputList);
-            
+
         }
-        
+
         return request;
 
     }
-    
+
     @Override
     public String toString() {
         // TODO Auto-generated method stub
 
-        StringBuffer sb=new StringBuffer();
-        sb.append(code);
+        StringBuffer sb = new StringBuffer();
+        sb.append("code :" + code);
         sb.append("\n\n");
-        
-        if(code==CHUNK){
-            sb.append(chunk);
-        }else{
-            
-            sb.append(msg);
-            
-            if(inputList!=null&&inputList.size()>0){
-                sb.append("\n\n");                
-                for(String item: inputList){
-                    sb.append(item);
-                    sb.append("\n");
-                }
-            }
-            
+        sb.append("msg :" + msg);
+        sb.append("\n\n");
+
+        if (inputList != null) {
+            sb.append("inputList :" + inputList.size());
+        } else {
+            sb.append("inputList :" + "null");
         }
-        
-        return sb.toString().trim();
-        
+        sb.append("\n\n");
+
+        sb.append("chunk :" + chunk);
+
+        return sb.toString();
+
     }
-    
+
     @Override
     public String toMsgText() {
         // TODO Auto-generated method stub
-        StringBuffer sb=new StringBuffer();
+        StringBuffer sb = new StringBuffer();
         sb.append(code);
         sb.append("\n\n");
         sb.append(msg);
-        sb.append("\n\n");  
-        
-        if(code==CHUNK){
-            sb.append(chunk);
-        }else{
-              
-            if(inputList!=null&&inputList.size()>0){            
-                for(String item: inputList){
-                    sb.append(item);
-                    sb.append("\n");
-                }
-            }else{
-                sb.append("null");
+        sb.append("\n\n");
+
+        sb.append("-\n");
+        if (inputList != null && inputList.size() > 0) {
+            for (String item : inputList) {
+                sb.append(item);
+                sb.append("\n");
             }
-            
         }
-        
-        return sb.toString().trim();
-        
+        sb.append("\n");
+
+        sb.append(chunk);
+
+        return sb.toString();
+
     }
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

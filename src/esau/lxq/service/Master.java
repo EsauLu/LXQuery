@@ -18,7 +18,7 @@ public class Master {
 
     private PartialTreeBuilder builder;
 
-    private QueryExecutor queryExecutor;
+    private PQueryExecutor queryExecutor;
 
     private String[] xpaths = {
             // "/descendant::A[descendant::B/descendant::C/parent::B]"
@@ -30,12 +30,21 @@ public class Master {
             // "/descendant::B[following-sibling::B/child::C]",
             // "/descendant::C[following-sibling::D/parent::B/child::B]",
 
-            "/child::A/descendant::B/descendant::C",
-            "/child::A/descendant::B/descendant::C/parent::B",
-            "/descendant::B/following-sibling::B",
-             "/descendant::B[following-sibling::B/child::C]/child::C",
-            "/descendant::D[parent::B[descendant::E]]" 
-        };
+            // "/child::A/descendant::B/descendant::C",
+            // "/descendant::D[parent::B[descendant::E]]" ,
+//            "/descendant::*", 
+//            "/descendant::*/child::C",
+
+            // // Q1:
+             "/child::A/descendant::B/descendant::C/parent::B",
+            //
+            // // Q2:
+            // "/descendant::B/following-sibling::B",
+            //
+            // // Q3:
+            // "/descendant::B[following-sibling::B/child::C]/child::C",
+
+    };
 
     public Master() {
         super();
@@ -55,33 +64,60 @@ public class Master {
 
         clientManager.initClients(pidList);
 
-        builder = new PartialTreeBuilder(workerNum, pidList, clientManager);
-        builder.build();
+        // String xmlDocPath = "res/test0.xml";
+         String xmlDocPath = "res/test2.xml";
+//        String xmlDocPath = "C:/standard";
+        
+        long t1=0;
+        long t2=0;
 
-//        queryExecutor = new QueryExecutor(pidList, clientManager);
-//
-//        for (String xpath : xpaths) {
-//
-//            System.out.println("-----------------------------------------------------");
-//            System.out.println();
-//            System.out.println("XPath : " + xpath);
-//            System.out.println();
-//            System.out.println("------------------------------");
-//
-//            Step steps = XPathParser.parseXpath(xpath);
-//
-//            List<List<Node>> resultLists = queryExecutor.query(steps);
-//
-//            System.out.println("==============================");
-//            System.out.println();
-//            System.out.println("Final results :");
-//            System.out.println();
-//
-//            Utils.print(resultLists);
-//
-//            System.out.println("====================================================================================");
-//
-//        }
+        System.out.println("Building Partial trees.");
+        System.out.println("Please wait...");
+        
+        builder = new PartialTreeBuilder(workerNum, pidList, clientManager);
+        
+        t1=System.currentTimeMillis();
+        builder.build(xmlDocPath);
+        t2=System.currentTimeMillis();
+        
+        System.out.println("Complete!");
+        System.out.println("Time out : "+(t2-t1)+" ms");
+
+        queryExecutor = new PQueryExecutor(pidList, clientManager);
+
+        for (String xpath : xpaths) {
+
+            System.out.println("-----------------------------------------------------");
+            System.out.println();
+            System.out.println("XPath : " + xpath);
+            System.out.println();
+            System.out.println("------------------------------");
+
+            Step steps = XPathParser.parseXpath(xpath);
+
+            t1=System.currentTimeMillis();
+            List<List<Node>> resultLists = queryExecutor.query(steps);
+            t2=System.currentTimeMillis();
+
+            System.out.println("==============================");
+            System.out.println();
+            System.out.println("Final results :");
+            System.out.println();
+
+            for (int i = 0; i < pidList.size(); i++) {
+
+                System.out.println("  pt" + i + " : " + resultLists.get(i).size());
+
+            }
+            System.out.println();
+            System.out.println("Time out : "+(t2-t1)+" ms");
+            System.out.println();
+
+            // Utils.print(resultLists);
+
+            System.out.println("====================================================================================");
+
+        }
 
     }
 
