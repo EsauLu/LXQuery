@@ -34,8 +34,8 @@ public class ControllerImpl implements Controller {
 
         System.out.println("---------------------------------");
         System.out.println();
-        System.out.println(request.toMsgText());
-//        System.out.println(request.toString());
+//        System.out.println(request.toMsgText());
+        System.out.println(request.toString());
         System.out.println();
         System.out.println("---------------------------------");
 
@@ -269,8 +269,8 @@ public class ControllerImpl implements Controller {
         }
 
         System.out.println();
-        System.out.println(response.toMsgText());
-//        System.out.println(response.toString());
+//        System.out.println(response.toMsgText());
+        System.out.println(response.toString());
         System.out.println();
 
         System.out.println("======================================");

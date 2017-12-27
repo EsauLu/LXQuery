@@ -30,6 +30,7 @@ public class PartialTreeBuilder {
         dispatchXMLDocument(xmlDocPath);
 
         // Compute pre-path
+
         getPrePath();
 
         LxqRequest request = new LxqRequestImpl();
@@ -79,7 +80,10 @@ public class PartialTreeBuilder {
             clientManager.sendRequest(pid, request);
         }
 
-        return clientManager.getResponseList(pidList);
+        
+        List<LxqResponse> responses=clientManager.getResponseList(pidList);
+
+        return responses;
 
     }
 

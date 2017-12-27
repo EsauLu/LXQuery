@@ -240,7 +240,7 @@ public class Utils {
             System.out.println();
         }
         System.out.println();
-        System.out.println("---------------------------------------------------------------------");
+        System.out.println("---------------------------------------------");
 
     }
 
