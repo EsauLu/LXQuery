@@ -63,17 +63,19 @@ public class Main {
     }
 
     public static void master() {
+        
+        int[] nums= {8};
 
-        for (int num = 1; num <= 8; num++) {
+        for (int i =0; i <= nums.length; i++) {
             
             System.out.println();
 
             System.out.println("master");
-            System.out.println("worker number : "+num);
+            System.out.println("worker number : "+nums[i]);
 
-            System.out.println();
+//            System.out.println();
 
-            System.out.print("Input worker number : ");
+//            System.out.print("Input worker number : ");
 
             // int num=scn.nextInt();
 
@@ -83,7 +85,7 @@ public class Main {
             // num=1;
             // }
 
-            Master master = new Master(num);
+            Master master = new Master(nums[i]);
             master.start();
             
             System.out.println();
