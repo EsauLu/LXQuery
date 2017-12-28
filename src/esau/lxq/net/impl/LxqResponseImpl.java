@@ -70,13 +70,12 @@ public class LxqResponseImpl implements LxqResponse {
 
         sb.append(msg);
         sb.append("\n\n");
+        sb.append("-");
         if (resultList != null && resultList.size() > 0) {
             for (String item : resultList) {
-                sb.append(item);
                 sb.append("\n");
+                sb.append(item);
             }
-        } else {
-            sb.append("null");
         }
 
         return sb;

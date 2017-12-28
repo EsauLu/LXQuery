@@ -76,7 +76,7 @@ public class ClientManager {
         File file = new File(path);
         if (!file.exists() || !file.isFile()) {
             return;
-        }
+        }       
 
         LxqRequest request = new LxqRequestImpl();
         request.setCode(LxqRequest.CHUNK);

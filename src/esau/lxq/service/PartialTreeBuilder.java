@@ -31,7 +31,9 @@ public class PartialTreeBuilder {
 
         // Compute pre-path
 
+        System.out.println("111111");
         getPrePath();
+        System.out.println("222222");
 
         LxqRequest request = new LxqRequestImpl();
 
@@ -70,6 +72,7 @@ public class PartialTreeBuilder {
             }
         }
 
+        System.out.println("3333333");
         request.setCode(LxqRequest.COMPUTE_RANGS);
         for (int pid : pidList) {
             List<Node> list = inputs.get(pid);
@@ -78,8 +81,10 @@ public class PartialTreeBuilder {
             }
             request.setInputList(ListUtils.convertNodeList(list));
             clientManager.sendRequest(pid, request);
+            System.out.println("111111 "+pid);
         }
 
+        System.out.println("4444444");
         
         List<LxqResponse> responses=clientManager.getResponseList(pidList);
 
@@ -153,7 +158,10 @@ public class PartialTreeBuilder {
 
         clientManager.sendChunks(xmlDocPath, pidList);
 
+        System.out.println("ooooooo");
+        
         List<List<String>> results = clientManager.getResultList(pidList);
+        System.out.println("ffffffffff");
 
         clientManager.finxChunks(pidList, results);
 

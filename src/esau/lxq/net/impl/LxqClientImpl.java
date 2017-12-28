@@ -209,13 +209,20 @@ public class LxqClientImpl implements LxqClient {
         String type = text.substring(0, k);
         response.setMsg(type);
         text.delete(0, k + 2);
+        
+        k = text.indexOf("\n");
+        if(k!=-1) {
+            text.delete(0, k + 1);
+        }
 
         List<String> resultList = new ArrayList<>();
         k = text.indexOf("\n");
+        System.out.println("eeee");
         while (k != -1) {
             resultList.add(text.substring(0, k).trim());
             text.delete(0, k + 1);
         }
+        System.out.println("eeee");
         if (text.length() > 0) {
             resultList.add(text.toString().trim());
         }
