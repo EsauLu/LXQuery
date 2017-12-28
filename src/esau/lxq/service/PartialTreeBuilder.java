@@ -70,7 +70,6 @@ public class PartialTreeBuilder {
             }
         }
 
-        System.out.println("3333333");
         request.setCode(LxqRequest.COMPUTE_RANGS);
         for (int pid : pidList) {
             List<Node> list = inputs.get(pid);
@@ -79,10 +78,7 @@ public class PartialTreeBuilder {
             }
             request.setInputList(ListUtils.convertNodeList(list));
             clientManager.sendRequest(pid, request);
-            System.out.println("111111 "+pid);
         }
-
-        System.out.println("4444444");
         
         List<LxqResponse> responses=clientManager.getResponseList(pidList);
 
