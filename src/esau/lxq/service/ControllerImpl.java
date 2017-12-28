@@ -56,7 +56,7 @@ public class ControllerImpl implements Controller {
 
         case LxqRequest.RECEIVE_CHUNK:{
 
-            StringBuffer fix = receiveChunk(request, response);
+            StringBuilder fix = receiveChunk(request, response);
             
             List<String> res=new ArrayList<>();
             res.add(fix.toString());
@@ -277,11 +277,11 @@ public class ControllerImpl implements Controller {
 
     }
 
-    private StringBuffer receiveChunk(LxqRequest request, LxqResponse response) {
+    private StringBuilder receiveChunk(LxqRequest request, LxqResponse response) {
 
         BufferedInputStream bis = null;
         BufferedOutputStream bos = null;
-        StringBuffer fixStr = new StringBuffer();
+        StringBuilder fixStr = new StringBuilder();
         try {
 
             File temFile = new File("./tem.xml");

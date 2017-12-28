@@ -258,7 +258,7 @@ public class Worker {
     }
 
 //    public String responseSubTrees() {
-//        StringBuffer sb = new StringBuffer();
+//        StringBuilder sb = new StringBuilder();
 //
 //        for (Node root : subtrees) {
 //            sb.append(root.toBfsString());

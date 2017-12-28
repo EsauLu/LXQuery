@@ -1,6 +1,5 @@
 package esau.lxq.service;
 
-import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;

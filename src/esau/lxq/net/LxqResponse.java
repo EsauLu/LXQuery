@@ -14,6 +14,6 @@ public interface LxqResponse {
     
     public List<String> getResultList();
 
-    public String toMsgText();
+    public StringBuilder toMsgText();
     
 }

@@ -69,7 +69,7 @@ public class XMLParser {
 
         List<Tag> tagList = new ArrayList<Tag>();
 
-        StringBuffer chunkBuff = new StringBuffer(chunk);
+        StringBuilder chunkBuff = new StringBuilder(chunk);
 
         while (true) {
 
@@ -100,7 +100,7 @@ public class XMLParser {
         int len = 0;
         byte[] buff = new byte[8192];
         BufferedInputStream bis = null;
-        StringBuffer chunkBuff = new StringBuffer();
+        StringBuilder chunkBuff = new StringBuilder();
 
         try {
 

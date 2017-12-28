@@ -63,7 +63,7 @@ public interface LxqRequest {
 
     public String getChunk();
 
-    public String toMsgText();
+    public StringBuilder toMsgText();
     
     public InputStream getInputStream();
     

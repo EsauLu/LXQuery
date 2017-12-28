@@ -121,7 +121,7 @@ public class LxqRequestImpl implements LxqRequest {
     public String toString() {
         // TODO Auto-generated method stub
 
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         sb.append("code :" + code);
         sb.append("\n\n");
         sb.append("msg :" + msg);
@@ -141,9 +141,9 @@ public class LxqRequestImpl implements LxqRequest {
     }
 
     @Override
-    public String toMsgText() {
+    public StringBuilder toMsgText() {
         // TODO Auto-generated method stub
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         sb.append(code);
         sb.append("\n\n");
         sb.append(msg);
@@ -160,7 +160,7 @@ public class LxqRequestImpl implements LxqRequest {
 
         sb.append(chunk);
 
-        return sb.toString();
+        return sb;
 
     }
 

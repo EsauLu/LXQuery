@@ -7,7 +7,7 @@ public class XPathParser {
 
     public static Step parseXpath(String xpath) {
 
-        StringBuffer sb = new StringBuffer(xpath);
+        StringBuilder sb = new StringBuilder(xpath);
         if (sb.charAt(0) == '/') {
             sb.deleteCharAt(0);
         }

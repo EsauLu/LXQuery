@@ -111,7 +111,20 @@ public class LxqServerImpl implements LxqServer {
     private void print(OutputStream out, LxqResponse response) throws Exception {
 
         BufferedOutputStream bos = new BufferedOutputStream(out);
-        bos.write(response.toMsgText().getBytes());
+
+        StringBuilder sb = response.toMsgText();
+        
+        int len=1024;
+
+        while (sb.length() > 0) {
+            
+            int k=Math.min(sb.length(), len);
+            String s=sb.substring(0, k);
+            sb.delete(0, k);
+            bos.write(s.getBytes());
+
+        }
+
         bos.flush();
 
     }
@@ -119,7 +132,7 @@ public class LxqServerImpl implements LxqServer {
     private LxqRequest getRequest(InputStream in) throws Exception {
 
         BufferedInputStream bis = new BufferedInputStream(in);
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         int len = 0;
         byte[] buff = new byte[bufferSize];
 
@@ -127,10 +140,12 @@ public class LxqServerImpl implements LxqServer {
             sb.append(new String(buff, 0, len));
         }
 
-        return parse(sb.toString());
+        return parse(sb);
     }
 
-    private LxqRequest parse(String text) {
+    private LxqRequest parse(StringBuilder text) {
+        
+//        System.out.println(text.toString());
 
         LxqRequest request = new LxqRequestImpl();
 
@@ -145,27 +160,38 @@ public class LxqServerImpl implements LxqServer {
             e.printStackTrace();
         }
         request.setCode(code);
-        text = text.substring(k + 2);
+        text.delete(0, k + 2);
 
         // set msg
         k = text.indexOf("\n\n");
         param = text.substring(0, k);
         request.setMsg(param);
-        text = text.substring(k + 2);
+        text.delete(0, k + 2);
+
+        // set chunk
+        k = text.indexOf("\n\n");
+        param = text.substring(k + 2);
+        request.setChunk(param);
+        text.delete(k, text.length());
 
         // set list
-        k = text.indexOf("\n\n");
-        param = text.substring(0, k);
-        String[] items = param.split("\n");
-        List<String> list=new ArrayList<>();
-        for (int i=1; i<items.length; i++) {            
-            list.add(items[i]);
+        k = text.indexOf("\n");
+        if(k!=-1) {
+            param = text.substring(0, k);
+            text.delete(0, k + 1);
         }
-        request.setInputList(list);
-        text = text.substring(k + 2);
         
-        //set chunk
-        request.setChunk(text);
+        List<String> list = new ArrayList<>();
+        k = text.indexOf("\n");
+        while (k != -1) {
+            param = text.substring(0, k);
+            list.add(param.trim());
+            text.delete(0, k + 1);
+        }
+        
+        if(text.length()>0) {
+            list.add(text.toString().trim());
+        }
 
         return request;
 

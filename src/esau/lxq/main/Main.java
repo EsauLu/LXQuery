@@ -32,7 +32,8 @@ public class Main {
             while (k == 1) {
                 master();
                 System.out.println("Continue? 1/0");
-                k = scn.nextInt();
+//                k = scn.nextInt();
+                break;
             }
         } else {
             worker();

@@ -32,7 +32,7 @@ public class Master {
 
             // "/child::A/descendant::B/descendant::C",
             // "/descendant::D[parent::B[descendant::E]]" ,
-            // "/child::*",
+//             "/child::*",
             // "/descendant::*/child::C",
 
             // // Q1:
@@ -47,11 +47,11 @@ public class Master {
             // //Q4
             "/child::site/descendant::keyword/parent::text",
             // //Q5
-            "/child::site/child::people/child::person[child::profile/child::gender]/child::name",
-            // //Q6
-            "/child::site/child::open_auctions/child::open_auction/child::bidder[following-sibling::bidder]",
-            // //Q7
-            "/child::site/child::closed_auctions/child::closed_auction/child::annotation/child::description/child::text/child::keyword",
+//            "/child::site/child::people/child::person[child::profile/child::gender]/child::name",
+//            // //Q6
+//            "/child::site/child::open_auctions/child::open_auction/child::bidder[following-sibling::bidder]",
+//            // //Q7
+//            "/child::site/child::closed_auctions/child::closed_auction/child::annotation/child::description/child::text/child::keyword",
 
     };
 
@@ -74,7 +74,7 @@ public class Master {
         clientManager.initClients(pidList);
 
         // String xmlDocPath = "res/test0.xml";
-        // String xmlDocPath = "res/test2.xml";
+//         String xmlDocPath = "res/test2.xml";
 //        String xmlDocPath = "C:/standard";
         String xmlDocPath = "C:/xmark40_0.xml";
 

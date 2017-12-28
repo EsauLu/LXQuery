@@ -52,7 +52,7 @@ public class LxqResponseImpl implements LxqResponse {
     public String toString() {
         // TODO Auto-generated method stub
 
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
 
         sb.append("msg : " + msg);
 
@@ -64,9 +64,9 @@ public class LxqResponseImpl implements LxqResponse {
     }
 
     @Override
-    public String toMsgText() {
+    public StringBuilder toMsgText() {
         // TODO Auto-generated method stub
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
 
         sb.append(msg);
         sb.append("\n\n");
@@ -79,7 +79,7 @@ public class LxqResponseImpl implements LxqResponse {
             sb.append("null");
         }
 
-        return sb.toString().trim();
+        return sb;
     }
 
 }

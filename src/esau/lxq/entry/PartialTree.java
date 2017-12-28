@@ -7,8 +7,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import esau.lxq.utils.Utils;
-
 public class PartialTree {
 
     private int pid;
