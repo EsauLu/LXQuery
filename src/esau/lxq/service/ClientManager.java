@@ -219,7 +219,8 @@ public class ClientManager {
 
         for (int i = 0; i < p; i++) {
             int pid = pids.get(i);
-            responses.add(getResponse(pid).getResultList());
+            List<String> result=getResponse(pid).getResultList();
+            responses.add(result);
         }
 
         return responses;

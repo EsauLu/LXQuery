@@ -76,7 +76,7 @@ public class Master {
         // String xmlDocPath = "res/test0.xml";
 //         String xmlDocPath = "res/test2.xml";
         String xmlDocPath = "/Users/imac/Desktop/standard";
-//        String xmlDocPath = "/Users/imac/Desktop/xmark40_0.xml";
+       // String xmlDocPath = "/Users/imac/Desktop/xmark40_0.xml";
 //        String xmlDocPath = "C:/standard";
 //        String xmlDocPath = "C:/xmark40_0.xml";
 
