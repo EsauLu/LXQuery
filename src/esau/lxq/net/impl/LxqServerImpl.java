@@ -192,6 +192,7 @@ public class LxqServerImpl implements LxqServer {
         if(text.length()>0) {
             list.add(text.toString().trim());
         }
+        request.setInputList(list);
 
         return request;
 
