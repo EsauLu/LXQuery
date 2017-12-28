@@ -31,9 +31,7 @@ public class PartialTreeBuilder {
 
         // Compute pre-path
 
-        System.out.println("111111");
         getPrePath();
-        System.out.println("222222");
 
         LxqRequest request = new LxqRequestImpl();
 
@@ -157,11 +155,8 @@ public class PartialTreeBuilder {
     private void dispatchXMLDocument(String xmlDocPath) {
 
         clientManager.sendChunks(xmlDocPath, pidList);
-
-        System.out.println("ooooooo");
         
         List<List<String>> results = clientManager.getResultList(pidList);
-        System.out.println("ffffffffff");
 
         clientManager.finxChunks(pidList, results);
 

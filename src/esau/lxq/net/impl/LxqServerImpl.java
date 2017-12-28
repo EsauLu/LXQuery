@@ -182,10 +182,13 @@ public class LxqServerImpl implements LxqServer {
         }
         
         List<String> list = new ArrayList<>();
-        k = text.indexOf("\n");
-        while (k != -1) {
+        while (true) {
+            k = text.indexOf("\n");
+            if(k==-1) {
+                break;
+            }
             param = text.substring(0, k);
-            list.add(param.trim());
+            list.add(param);
             text.delete(0, k + 1);
         }
         

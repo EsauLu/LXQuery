@@ -199,9 +199,6 @@ public class LxqClientImpl implements LxqClient {
     private LxqResponse parse(StringBuilder text) {
         response = new LxqResponseImpl();
 
-        System.out.println(text);
-        System.out.println("===");
-
         int k = text.indexOf("\n\n");
 
         if (k == -1) {
