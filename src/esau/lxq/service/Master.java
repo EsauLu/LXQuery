@@ -32,7 +32,7 @@ public class Master {
 
             // "/child::A/descendant::B/descendant::C",
             // "/descendant::D[parent::B[descendant::E]]" ,
-//             "/child::*",
+            // "/child::*",
             // "/descendant::*/child::C",
 
             // // Q1:
@@ -47,11 +47,11 @@ public class Master {
             // //Q4
             "/child::site/descendant::keyword/parent::text",
             // //Q5
-//            "/child::site/child::people/child::person[child::profile/child::gender]/child::name",
-//            // //Q6
-//            "/child::site/child::open_auctions/child::open_auction/child::bidder[following-sibling::bidder]",
-//            // //Q7
-//            "/child::site/child::closed_auctions/child::closed_auction/child::annotation/child::description/child::text/child::keyword",
+            // "/child::site/child::people/child::person[child::profile/child::gender]/child::name",
+            // // //Q6
+            // "/child::site/child::open_auctions/child::open_auction/child::bidder[following-sibling::bidder]",
+            // // //Q7
+            // "/child::site/child::closed_auctions/child::closed_auction/child::annotation/child::description/child::text/child::keyword",
 
     };
 
@@ -74,8 +74,8 @@ public class Master {
         clientManager.initClients(pidList);
 
         // String xmlDocPath = "res/test0.xml";
-//         String xmlDocPath = "res/test2.xml";
-//        String xmlDocPath = "C:/standard";
+        // String xmlDocPath = "res/test2.xml";
+        // String xmlDocPath = "C:/standard";
         String xmlDocPath = "C:/xmark40_0.xml";
 
         long t1 = 0;
@@ -95,33 +95,32 @@ public class Master {
 
         queryExecutor = new PQueryExecutor(pidList, clientManager);
 
-        
         System.out.println("==============================");
         System.out.println();
         System.out.println("Results :");
         System.out.println();
-        
+
         for (int i = 0; i < xpaths.length; i++) {
 
             String xpath = xpaths[i];
 
-//            System.out.println("---------------------------------------------");
-//            System.out.println();
-//            System.out.println("XPath : " + xpath);
-//            System.out.println();
-//            System.out.println("------------------------------");
+            // System.out.println("---------------------------------------------");
+            // System.out.println();
+            // System.out.println("XPath : " + xpath);
+            // System.out.println();
+            // System.out.println("------------------------------");
 
             Step steps = XPathParser.parseXpath(xpath);
 
             System.out.print("Q" + (i + 4) + " : ");
-            for (int j = 0; j < 10; j++) {
+            for (int j = 0; j < 1; j++) {
                 t1 = System.currentTimeMillis();
                 List<List<Node>> resultLists = queryExecutor.query(steps);
+                resultLists = null;
                 t2 = System.currentTimeMillis();
                 System.out.print((t2 - t1) + "ms  ");
             }
             System.out.println();
-
 
         }
         System.out.println();

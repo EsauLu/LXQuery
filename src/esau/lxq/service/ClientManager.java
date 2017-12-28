@@ -103,7 +103,15 @@ public class ClientManager {
                     request.setChunk(null);
                 }
                 
+                System.out.println();
+                System.out.println("send chunk"+i);
+                System.out.println(request);
+                
                 client.commit(request, size);
+                System.out.println("done!");
+                
+                System.out.println();
+                System.out.println("*********************");
 
             }
 
