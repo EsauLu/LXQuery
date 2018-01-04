@@ -45,7 +45,7 @@ public class QueryExecutor {
             int pid = pidList.get(i);
             clientManager.sendRequest(pid, request);
             LxqResponse response = clientManager.getResponse(pid);
-            List<MsgItem> result = response.getResultList();
+            List<Node> result = response.getNodeList();
             tem.add((Node)result.get(0));
             resultList.add(tem);
         }
@@ -139,13 +139,11 @@ public class QueryExecutor {
         for (int i = 0; i < p; i++) {
             int pid = pidList.get(i);
             List<Node> input = inputLists.get(i);
-            request.setInputList(ListUtils.convertNodeList(input));
+            request.setNodeList(input);
             clientManager.sendRequest(pid, request);
         }
-
-        List<LxqResponse> resposeLists = clientManager.getResponseList(pidList);
-
-        return ListUtils.recoverNodeListByResponse(resposeLists);
+        
+        return clientManager.getNodeResultLists(pidList);
     }
 
     public List<List<Node>> shareNodes(List<List<Node>> nodeLists) {
@@ -164,10 +162,10 @@ public class QueryExecutor {
 
         LxqRequest request = new LxqRequestImpl();
         request.setCode(LxqRequest.SHARE_NODES);
-        request.setInputList(ListUtils.convertNodeList(toBeShare));
+        request.setNodeList(toBeShare);
         clientManager.sendRequests(request);
 
-        List<List<Node>> responseLists = ListUtils.recoverNodeListByResponse(clientManager.getResponseList(pidList));
+        List<List<Node>> responseLists = clientManager.getNodeResultLists(pidList);
 
         for (int i = 0; i < p; i++) {
 

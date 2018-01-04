@@ -9,7 +9,6 @@ import java.util.Set;
 
 import esau.lxq.entry.Axis;
 import esau.lxq.entry.Link;
-import esau.lxq.entry.MsgItem;
 import esau.lxq.entry.Node;
 import esau.lxq.entry.NodeType;
 import esau.lxq.entry.PNode;
@@ -47,8 +46,8 @@ public class PQueryExecutor {
             int pid = pidList.get(i);
             clientManager.sendRequest(pid, request);
             LxqResponse response = clientManager.getResponse(pid);
-            List<MsgItem> result = response.getResultList();
-            tem.add((Node)result.get(0));
+            List<Node> result = response.getNodeList();
+            tem.add(result.get(0));
             resultList.add(tem);
         }
 
@@ -185,13 +184,11 @@ public class PQueryExecutor {
         for (int i = 0; i < p; i++) {
             int pid = pidList.get(i);
             List<PNode> input = inputLists.get(i);
-            request.setInputList(ListUtils.convertPNodeList(input));
+            request.setPNodeList(input);
             clientManager.sendRequest(pid, request);
         }
 
-        List<LxqResponse> resposeLists = clientManager.getResponseList(pidList);
-
-        return ListUtils.recoverPNodeListByResponse(resposeLists);
+        return clientManager.getPNodeResultLists(pidList);
     }
 
     public List<List<PNode>> sharePNodes(List<List<PNode>> nodeLists) {
@@ -213,10 +210,10 @@ public class PQueryExecutor {
         LxqRequest request = new LxqRequestImpl();
         request.setCode(LxqRequest.SHARE_PNODES);
         request.setType(Msg.PNODE_TYPE);
-        request.setInputList(ListUtils.convertPNodeList(toBeShare));
+        request.setPNodeList(toBeShare);
         clientManager.sendRequests(request);
 
-        List<List<PNode>> responseLists = ListUtils.recoverPNodeListByResponse(clientManager.getResponseList(pidList));
+        List<List<PNode>> responseLists = clientManager.getPNodeResultLists(pidList);
 
         for (int i = 0; i < p; i++) {
 
@@ -421,11 +418,10 @@ public class PQueryExecutor {
         for (int i = 0; i < p; i++) {
             int pid = pidList.get(i);
             List<Node> uids = uidLists.get(pid);
-            request.setInputList(ListUtils.convertNodeList(uids));
+            request.setNodeList(uids);
             clientManager.sendRequest(pid, request);
         }
-        List<LxqResponse> responses = clientManager.getResponseList(pidList);
-        List<List<Node>> resultLists = ListUtils.recoverNodeListByResponse(responses);
+        List<List<Node>> resultLists = clientManager.getNodeResultLists(pidList);
 
         return shareNodes(resultLists);
     }
@@ -447,10 +443,10 @@ public class PQueryExecutor {
         LxqRequest request = new LxqRequestImpl();
         request.setCode(LxqRequest.SHARE_NODES);
         request.setType(Msg.NODE_TYPE);
-        request.setInputList(ListUtils.convertNodeList(toBeShare));
+        request.setNodeList(toBeShare);
         clientManager.sendRequests(request);
 
-        List<List<Node>> responseLists = ListUtils.recoverNodeListByResponse(clientManager.getResponseList(pidList));
+        List<List<Node>> responseLists = clientManager.getNodeResultLists(pidList);
 
         for (int i = 0; i < p; i++) {
 

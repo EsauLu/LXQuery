@@ -3,18 +3,22 @@ package esau.lxq.net;
 import java.util.List;
 
 import esau.lxq.entry.MsgItem;
+import esau.lxq.entry.Node;
+import esau.lxq.entry.PNode;
 
 public interface LxqResponse extends Msg{
     
     public void setMsg(String msg);
     
     public String getMsg();
+
+    public void setNodeList(List<Node> list);
     
-    public LxqResponse add(MsgItem item);
+    public List<Node> getNodeList();
     
-    public void setResultList(List<MsgItem > resultList);
+    public void setPNodeList(List<PNode> list);
     
-    public List<MsgItem> getResultList();
+    public List<PNode> getPNodeList();
 
 //    public StringBuilder toMsgText();
     

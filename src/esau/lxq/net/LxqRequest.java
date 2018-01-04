@@ -4,6 +4,8 @@ import java.io.InputStream;
 import java.util.List;
 
 import esau.lxq.entry.MsgItem;
+import esau.lxq.entry.Node;
+import esau.lxq.entry.PNode;
 
 public interface LxqRequest extends Msg{
 
@@ -57,9 +59,17 @@ public interface LxqRequest extends Msg{
 
     public String getMsg();
 
-    public void setInputList(List<MsgItem> inputList);
-
-    public List<MsgItem> getInputList();
+//    public void setInputList(List<MsgItem> inputList);
+//
+//    public List<MsgItem> getInputList();
+    
+    public void setNodeList(List<Node> list);
+    
+    public List<Node> getNodeList();
+    
+    public void setPNodeList(List<PNode> list);
+    
+    public List<PNode> getPNodeList();
 
     public void setChunk(String chunk);
 

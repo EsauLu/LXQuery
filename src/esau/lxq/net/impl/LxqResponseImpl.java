@@ -1,23 +1,24 @@
 package esau.lxq.net.impl;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import esau.lxq.entry.MsgItem;
+import esau.lxq.entry.Node;
+import esau.lxq.entry.PNode;
 import esau.lxq.net.LxqResponse;
 
 public class LxqResponseImpl implements LxqResponse {
 
     private String msg;
+    
+    public List<Node> nodeList;
 
-    private List<MsgItem> resultList;
+    public List<PNode> pnodeList;
 
     private String type = NODE_TYPE;
 
     public LxqResponseImpl() {
         super();
         // TODO Auto-generated constructor stub
-        resultList = new ArrayList<>();
     }
 
     @Override
@@ -26,29 +27,26 @@ public class LxqResponseImpl implements LxqResponse {
         this.msg = msg;
     }
 
+    public List<Node> getNodeList() {
+        return nodeList;
+    }
+
+    public void setNodeList(List<Node> nodeList) {
+        this.nodeList = nodeList;
+    }
+
+    public List<PNode> getPNodeList() {
+        return pnodeList;
+    }
+
+    public void setPNodeList(List<PNode> pnodeList) {
+        this.pnodeList = pnodeList;
+    }
+
     @Override
     public String getMsg() {
         // TODO Auto-generated method stub
         return this.msg;
-    }
-
-    @Override
-    public LxqResponse add(MsgItem item) {
-        // TODO Auto-generated method stub
-        resultList.add(item);
-        return this;
-    }
-
-    @Override
-    public void setResultList(List<MsgItem> resultList) {
-        // TODO Auto-generated method stub
-        this.resultList = resultList;
-    }
-
-    @Override
-    public List<MsgItem> getResultList() {
-        // TODO Auto-generated method stub
-        return this.resultList;
     }
 
     @Override
@@ -61,7 +59,11 @@ public class LxqResponseImpl implements LxqResponse {
 
         sb.append("\n\n");
 
-        sb.append("resultList : " + resultList == null ? "null" : resultList.size());
+        sb.append("nodeList : " + nodeList == null ? "null" : nodeList.size());
+        
+        sb.append("\n\n");
+
+        sb.append("pnodeList : " + pnodeList == null ? "null" : pnodeList.size());
 
         return sb.toString().trim();
     }
