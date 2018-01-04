@@ -2,7 +2,6 @@ package esau.lxq.net;
 
 import java.util.List;
 
-import esau.lxq.entry.MsgItem;
 import esau.lxq.entry.Node;
 import esau.lxq.entry.PNode;
 

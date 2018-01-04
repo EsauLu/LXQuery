@@ -8,7 +8,6 @@ import java.util.Map;
 import java.util.Set;
 
 import esau.lxq.entry.Axis;
-import esau.lxq.entry.MsgItem;
 import esau.lxq.entry.Node;
 import esau.lxq.entry.NodeType;
 import esau.lxq.entry.PNode;

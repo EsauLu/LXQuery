@@ -6,7 +6,6 @@ import esau.lxq.net.LxqResponse;
 import java.util.ArrayList;
 import java.util.List;
 
-import esau.lxq.entry.MsgItem;
 import esau.lxq.entry.Node;
 import esau.lxq.net.Controller;
 

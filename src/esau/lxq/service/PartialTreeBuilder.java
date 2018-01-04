@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import esau.lxq.entry.MsgItem;
 import esau.lxq.entry.Node;
 import esau.lxq.net.LxqRequest;
 import esau.lxq.net.LxqResponse;
