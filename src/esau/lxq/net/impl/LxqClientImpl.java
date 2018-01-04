@@ -147,9 +147,6 @@ public class LxqClientImpl implements LxqClient {
 
     private void writeRequest(OutputStream out, LxqRequest request) throws Exception {
         // TODO Auto-generated method stub
-
-        DataOutputStream dos=new DataOutputStream(out);
-        
         
         BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(out));
 
