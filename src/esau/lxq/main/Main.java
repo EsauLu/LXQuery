@@ -41,20 +41,20 @@ public class Main {
     // private static String xmlDocPath = "/Users/imac/Desktop/standard";
     // private static String xmlDocPath = "/Users/imac/Desktop/xmark40_0.xml";
     // private static String xmlDocPath = "res/test0.xml";
-    // private static String xmlDocPath = "res/test2.xml";
+     private static String xmlDocPath = "res/test2.xml";
 //    private static String xmlDocPath = "C:/xml/xmark1.xml";
-     private static String xmlDocPath = "C:/xml/xmark6.xml";
+//     private static String xmlDocPath = "C:/xml/xmark6.xml";
 
     private static String[] xpaths = {
 
-            // // Q1:
-            // "/child::A/descendant::B/descendant::C/parent::B",
-            //
-            // // Q2:
-            // "/descendant::B/following-sibling::B",
-            //
-            // // Q3:
-            // "/descendant::B[following-sibling::B/child::C]/child::C",
+//             // Q1:
+//             "/child::A/descendant::B/descendant::C/parent::B",
+//            
+//             // Q2:
+//             "/descendant::B/following-sibling::B",
+//            
+//             // Q3:
+//             "/descendant::B[following-sibling::B/child::C]/child::C",
 
             // Q4
             "/child::site/descendant::keyword/parent::text",
@@ -62,7 +62,7 @@ public class Main {
             "/child::site/child::people/child::person[child::profile/child::gender]/child::name",
             // Q6
             "/child::site/child::open_auctions/child::open_auction/child::bidder[following-sibling::bidder]",
-            // Q7
+//             Q7
 //            "/child::site/child::closed_auctions/child::closed_auction/child::annotation/child::description/child::text/child::keyword",
 
     };
@@ -112,13 +112,13 @@ public class Main {
 
     public static void master() {
 
-        // int[] nums= {1};
+         int[] nums= {1};
         // int[] nums= {2};
         // int[] nums = { 5 };
 //         int[] nums = { 8, 4, 2, 1 };
         // int[] nums= {8, 5, 4, 2, 1};
 //       int[] nums = { 1, 2, 3, 4, 5, 6, 7, 8};
-       int[] nums = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16 };
+//       int[] nums = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16 };
 
         Master master = new Master(workerIps, port);
 

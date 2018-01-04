@@ -10,6 +10,7 @@ import java.util.List;
 import esau.lxq.entry.Node;
 import esau.lxq.entry.Step;
 import esau.lxq.parser.XPathParser;
+import esau.lxq.utils.Utils;
 
 public class Master {
 
@@ -93,7 +94,7 @@ public class Master {
 
             System.out.print("Time out : ");
             List<Long> counts=new ArrayList<>();
-            for (int j = 0; j < 10; j++) {
+            for (int j = 0; j < 20; j++) {
                 t1 = System.currentTimeMillis();
                 List<List<Node>> resultLists = queryExecutor.query(steps);
                 t2 = System.currentTimeMillis();
@@ -114,7 +115,7 @@ public class Master {
                 bw.write(String.valueOf(t2 - t1));
                 bw.write(" ");
 
-                // Utils.print(resultLists);
+//                 Utils.print(resultLists);
                 resultLists = null;
 
             }
