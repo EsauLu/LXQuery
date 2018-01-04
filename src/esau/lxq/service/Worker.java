@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.Deque;
 import java.util.List;
 
-import esau.lxq.entry.MsgItem;
 import esau.lxq.entry.Node;
 import esau.lxq.entry.NodeType;
 import esau.lxq.entry.PartialTree;
@@ -25,8 +24,8 @@ public class Worker {
         pt = new PartialTree();
     }
 
-    public List<MsgItem> getRoot() {
-        List<MsgItem> list = new ArrayList<>();
+    public List<Node> getRoot() {
+        List<Node> list = new ArrayList<>();
 
         list.add(pt.getRoot());
 
@@ -37,11 +36,9 @@ public class Worker {
         return pt;
     }
 
-    public void computRangs(List<MsgItem> inputs) {
+    public void computRangs(List<Node> inputs) {
 
-        List<Node> rangsList = ListUtils.recoverNodeList(inputs);
-
-        for (Node n1 : rangsList) {
+        for (Node n1 : inputs) {
             Node n2 = pt.findNodeByUid(n1.getUid());
             if (n2 == null) {
                 continue;
@@ -52,14 +49,15 @@ public class Worker {
 
     }
 
-    public long computePrePath(String startUid, List<MsgItem> auxList) {
+    public long computePrePath(String startUid, List<Node> auxList) {
 
         long uid = Long.parseLong(startUid);
         if (subtrees.size() == 0) {
             return uid;
         }
 
-        List<Node> pp = ListUtils.recoverNodeList(auxList);
+        List<Node> pp = new ArrayList<>();
+        pp.addAll(auxList);
         auxList.clear();
 
         Node node = subtrees.get(0);
@@ -105,7 +103,7 @@ public class Worker {
             node = node.getLastChild();
         }
 
-        auxList.addAll(ListUtils.convertNodeList(pp));
+        auxList.addAll(pp);
 
         subtrees.clear();
         subtrees = null;
@@ -161,9 +159,9 @@ public class Worker {
         return uid;
     }
 
-    public List<MsgItem> selectLeftOpenNode() {
+    public List<Node> selectLeftOpenNode() {
 
-        List<MsgItem> ll = new ArrayList<>();
+        List<Node> ll = new ArrayList<>();
 
         Node root = pt.getRoot();
         Node p = root;
@@ -180,9 +178,9 @@ public class Worker {
         return ll;
     }
 
-    public List<MsgItem> selectRightOpenNode() {
+    public List<Node> selectRightOpenNode() {
 
-        List<MsgItem> rl = new ArrayList<>();
+        List<Node> rl = new ArrayList<>();
 
         Node root = pt.getRoot();
         Node p = root;
@@ -216,8 +214,8 @@ public class Worker {
         System.out.println("--------------------");
     }
 
-    public List<MsgItem> getOpenNodes() {
-        List<MsgItem> list = new ArrayList<>();
+    public List<Node> getOpenNodes() {
+        List<Node> list = new ArrayList<>();
 
         Node root = pt.getRoot();
         Node parent = new Node();

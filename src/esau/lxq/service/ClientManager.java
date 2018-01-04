@@ -8,7 +8,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import esau.lxq.entry.MsgItem;
+import esau.lxq.entry.Node;
+import esau.lxq.entry.PNode;
 import esau.lxq.net.LxqClient;
 import esau.lxq.net.LxqRequest;
 import esau.lxq.net.LxqResponse;
@@ -187,15 +188,30 @@ public class ClientManager {
 
     }
 
-    public List<List<MsgItem>> getResultList(List<Integer> pids) {
+    public List<List<Node>> getNodeResultLists(List<Integer> pids) {
         int p = pids.size();
 
-        List<List<MsgItem>> responses = new ArrayList<>();
+        List<List<Node>> responses = new ArrayList<>();
 
         for (int i = 0; i < p; i++) {
             int pid = pids.get(i);
             LxqResponse response = getResponse(pid);
-            List<MsgItem> result = response.getResultList();
+            List<Node> result = response.getNodeList();
+            responses.add(result);
+        }
+
+        return responses;
+
+    }
+    public List<List<PNode>> getPNodeResultLists(List<Integer> pids) {
+        int p = pids.size();
+
+        List<List<PNode>> responses = new ArrayList<>();
+
+        for (int i = 0; i < p; i++) {
+            int pid = pids.get(i);
+            LxqResponse response = getResponse(pid);
+            List<PNode> result = response.getPNodeList();
             responses.add(result);
         }
 

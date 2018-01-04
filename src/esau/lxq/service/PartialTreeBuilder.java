@@ -77,7 +77,7 @@ public class PartialTreeBuilder {
             if (list == null) {
                 continue;
             }
-            request.setInputList(ListUtils.convertNodeList(list));
+            request.setNodeList(list);
             clientManager.sendRequest(pid, request);
         }
         
@@ -90,7 +90,7 @@ public class PartialTreeBuilder {
     private void getPrePath() {
 
         String startUid = "-1";
-        List<MsgItem> auxList = null;
+        List<Node> auxList = null;
         LxqRequest request = new LxqRequestImpl();
 
         request.setCode(LxqRequest.COMPUTE_PREPATH);
@@ -98,13 +98,13 @@ public class PartialTreeBuilder {
         for (int i = 0; i < workerNum; i++) {
             int pid = pidList.get(i);
 
-            request.setInputList(auxList);
+            request.setNodeList(auxList);
             request.setMsg(startUid);
             
             LxqResponse response = clientManager.sendRequestByLock(pid, request);
 
             startUid = response.getMsg();
-            auxList = response.getResultList();
+            auxList = response.getNodeList();
 
         }
 
@@ -123,7 +123,7 @@ public class PartialTreeBuilder {
         for (int i = 0; i < workerNum; i++) {
             int pid = pidList.get(i);
             LxqResponse response = responseMap.get(pid);
-            List<Node> ll = ListUtils.recoverNodeList(response.getResultList());
+            List<Node> ll = response.getNodeList();
             lls.add(ll);
         }
 
@@ -143,7 +143,7 @@ public class PartialTreeBuilder {
         for (int i = 0; i < workerNum; i++) {
             int pid = pidList.get(i);
             LxqResponse response = responseMap.get(pid);
-            List<Node> ll = ListUtils.recoverNodeList(response.getResultList());
+            List<Node> ll = response.getNodeList();
             rls.add(ll);
         }
 

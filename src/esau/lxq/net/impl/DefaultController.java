@@ -37,11 +37,11 @@ public class DefaultController implements Controller {
         System.out.println(request.getChunk());
         
         System.out.println("------------------------");
-        List<MsgItem> resList=new ArrayList<>();
+        List<Node> resList=new ArrayList<>();
         for(int i=0;i<3;i++){
             resList.add(new Node());
         }
-        response.setResultList(resList);
+        response.setNodeList(resList);
         
         response.setMsg("Node");
         System.out.println("---------------------------------------------");
@@ -57,20 +57,20 @@ public class DefaultController implements Controller {
         
         System.out.println("Name test : "+request.getMsg());
         
-        List<MsgItem> list=request.getInputList();
+        List<Node> list=request.getNodeList();
         
         System.out.println();
         
-        for(MsgItem item: list){
+        for(Node item: list){
             System.out.println(item);
         }
         
         System.out.println("------------------------");
-        List<MsgItem> resList=new ArrayList<>();
+        List<Node> resList=new ArrayList<>();
         for(int i=0;i<5;i++){
             resList.add(new Node());
         }
-        response.setResultList(resList);
+        response.setNodeList(resList);
         
         response.setMsg("Node");
         System.out.println("---------------------------------------------");
