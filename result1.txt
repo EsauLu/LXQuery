@@ -1,20 +1,20 @@
 /child::site/descendant::keyword/parent::text
 
-3858 4294 3801 3802 2870 3102 3424 3548 3585 2916 
+12389 6329 5711 6115 6091 5714 6156 5819 5696 6195 
 
 Number of nodes : 243533
 
 
 /child::site/child::people/child::person[child::profile/child::gender]/child::name
 
-1119 954 901 900 1165 1284 1137 1247 1368 1283 
+3748 3263 3266 3124 3344 3416 3238 3402 3322 3310 
 
 Number of nodes : 38266
 
 
 /child::site/child::open_auctions/child::open_auction/child::bidder[following-sibling::bidder]
 
-5509 5068 6163 5940 4696 5926 5698 4911 5514 5849 
+12913 13741 12388 12100 14037 13536 12131 12676 13001 12354 
 
 Number of nodes : 294654
 

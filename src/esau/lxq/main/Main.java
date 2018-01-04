@@ -38,12 +38,12 @@ public class Main {
 
     private static int port = 29000;
 
-    // private static String xmlDocPath = "/Users/imac/Desktop/standard";
+     private static String xmlDocPath = "/Users/imac/Desktop/xml/xmark6.xml";
     // private static String xmlDocPath = "/Users/imac/Desktop/xmark40_0.xml";
     // private static String xmlDocPath = "res/test0.xml";
     // private static String xmlDocPath = "res/test2.xml";
 //    private static String xmlDocPath = "C:/xml/xmark1.xml";
-     private static String xmlDocPath = "C:/xml/xmark6.xml";
+//     private static String xmlDocPath = "C:/xml/xmark6.xml";
 
     private static String[] xpaths = {
 
@@ -115,10 +115,10 @@ public class Main {
         // int[] nums= {1};
         // int[] nums= {2};
         // int[] nums = { 5 };
-//         int[] nums = { 8, 4, 2, 1 };
+         int[] nums = {16, 8, 4, 2, 1 };
         // int[] nums= {8, 5, 4, 2, 1};
 //       int[] nums = { 1, 2, 3, 4, 5, 6, 7, 8};
-       int[] nums = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16 };
+//       int[] nums = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16 };
 
         Master master = new Master(workerIps, port);
 
