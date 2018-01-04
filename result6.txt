@@ -1,0 +1,21 @@
+/child::site/descendant::keyword/parent::text
+
+1749 1179 1102 1231 1139 2533 1086 1132 1216 1150 
+
+Number of nodes : 243533
+
+
+/child::site/child::people/child::person[child::profile/child::gender]/child::name
+
+1300 801 986 899 815 870 832 816 869 801 
+
+Number of nodes : 38266
+
+
+/child::site/child::open_auctions/child::open_auction/child::bidder[following-sibling::bidder]
+
+3035 2985 2914 2918 3156 3008 2725 2932 2666 2923 
+
+Number of nodes : 294654
+
+

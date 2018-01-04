@@ -2,18 +2,20 @@ package esau.lxq.net;
 
 import java.util.List;
 
-public interface LxqResponse {
+import esau.lxq.entry.MsgItem;
+
+public interface LxqResponse extends Msg{
     
     public void setMsg(String msg);
     
     public String getMsg();
     
-    public LxqResponse add(String item);
+    public LxqResponse add(MsgItem item);
     
-    public void setResultList(List<String > resultList);
+    public void setResultList(List<MsgItem > resultList);
     
-    public List<String> getResultList();
+    public List<MsgItem> getResultList();
 
-    public StringBuilder toMsgText();
+//    public StringBuilder toMsgText();
     
 }

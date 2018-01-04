@@ -3,14 +3,16 @@ package esau.lxq.net;
 import java.io.InputStream;
 import java.util.List;
 
-public interface LxqRequest {
+import esau.lxq.entry.MsgItem;
+
+public interface LxqRequest extends Msg{
 
     public static final int NONE = -1;
 
     public static final int CHUNK = 98;
 
     public static final int RECEIVE_CHUNK = 99;
-    
+
     public static final int FILL_CHUNK = 100;
 
     public static final int LEFT_OPEN_NODES = 101;
@@ -55,18 +57,18 @@ public interface LxqRequest {
 
     public String getMsg();
 
-    public void setInputList(List<String> inputList);
+    public void setInputList(List<MsgItem> inputList);
 
-    public List<String> getInputList();
+    public List<MsgItem> getInputList();
 
     public void setChunk(String chunk);
 
     public String getChunk();
 
-    public StringBuilder toMsgText();
-    
+    // public StringBuilder toMsgText();
+
     public InputStream getInputStream();
-    
+
     public void setInputStream(InputStream in);
 
 }

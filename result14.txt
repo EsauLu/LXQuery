@@ -1,0 +1,21 @@
+/child::site/descendant::keyword/parent::text
+
+964 854 917 801 786 854 785 862 824 801 
+
+Number of nodes : 243533
+
+
+/child::site/child::people/child::person[child::profile/child::gender]/child::name
+
+716 715 713 1159 755 748 769 732 784 1085 
+
+Number of nodes : 38266
+
+
+/child::site/child::open_auctions/child::open_auction/child::bidder[following-sibling::bidder]
+
+2287 2598 3108 7613 2041 2049 5779 3478 2030 2179 
+
+Number of nodes : 294654
+
+

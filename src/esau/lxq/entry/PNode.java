@@ -2,7 +2,7 @@ package esau.lxq.entry;
 
 import java.util.Objects;
 
-public class PNode {
+public class PNode implements MsgItem{
 
     private Node node;
 
@@ -39,7 +39,8 @@ public class PNode {
         this.node = node;
         this.link = link;
     }
-    
+
+    @Override
     public String toText() {
         return node.toText()+" "+link.toText();
     }

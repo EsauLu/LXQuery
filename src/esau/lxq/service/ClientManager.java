@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import esau.lxq.entry.MsgItem;
 import esau.lxq.net.LxqClient;
 import esau.lxq.net.LxqRequest;
 import esau.lxq.net.LxqResponse;
@@ -18,15 +19,9 @@ public class ClientManager {
 
     private int clientNum;
 
-    // private String[] serverIps = { "192.168.118.128", "192.168.118.129",
-    // "192.168.118.130", "192.168.118.131",
-    // "192.168.118.132", "192.168.118.133", "192.168.118.134", "192.168.118.135",
-    // };
+    private String[] serverIps;
 
-    private String[] serverIps = { "172.21.52.50", "172.21.52.35", "172.21.52.51", "172.21.52.52", "172.21.52.53", "172.21.52.54",
-            "172.21.52.55", "172.21.52.56", "172.21.52.57", };
-
-    private int port = 29000;
+    private int port;
 
     private Map<Integer, LxqClient> clientsMap;
 
@@ -76,7 +71,7 @@ public class ClientManager {
         File file = new File(path);
         if (!file.exists() || !file.isFile()) {
             return;
-        }       
+        }
 
         LxqRequest request = new LxqRequestImpl();
         request.setCode(LxqRequest.CHUNK);
@@ -102,16 +97,8 @@ public class ClientManager {
                 } else {
                     request.setChunk(null);
                 }
-                
-                System.out.println();
-                System.out.println("send chunk"+i);
-                System.out.println(request);
-                
+
                 client.commit(request, size);
-                System.out.println("done!");
-                
-                System.out.println();
-                System.out.println("*********************");
 
             }
 
@@ -131,35 +118,22 @@ public class ClientManager {
 
     }
 
-    public void finxChunks(List<Integer> pids, List<List<String>> fill) {
+    public void finxChunks(List<Integer> pids, List<String> chunks) {
 
         LxqRequest request = new LxqRequestImpl();
         request.setCode(LxqRequest.FILL_CHUNK);
-
-        List<String> chunks = new ArrayList<>();
-        for (List<String> list : fill) {
-            StringBuilder sb = new StringBuilder();
-            for (String s : list) {
-                sb.append(s);
-            }
-            chunks.add(sb.toString());
-        }
-        chunks.add("");
 
         for (int i = 0; i < clientNum; i++) {
             int pid = pids.get(i);
             LxqClient client = getClientByPid(pid);
             String chunk = chunks.get(i + 1);
             request.setChunk(chunk);
-
             client.commit(request);
         }
 
     }
 
     public void sendChunk(int pid, String chunk) {
-
-        System.out.println("chunk --> " + pid);
 
         LxqRequest request = new LxqRequestImpl();
 
@@ -175,9 +149,10 @@ public class ClientManager {
 
     }
 
-    public LxqResponse sendRequestByLock(int pid, LxqRequest request) {
-        sendRequest(pid, request);
-        return getResponse(pid);
+    public LxqResponse sendRequestByLock(int pid, LxqRequest request) {        
+        sendRequest(pid, request);        
+        LxqResponse response=getResponse(pid);        
+        return response;
     }
 
     public void sendRequest(int pid, LxqRequest request) {
@@ -212,14 +187,15 @@ public class ClientManager {
 
     }
 
-    public List<List<String>> getResultList(List<Integer> pids) {
+    public List<List<MsgItem>> getResultList(List<Integer> pids) {
         int p = pids.size();
 
-        List<List<String>> responses = new ArrayList<>();
+        List<List<MsgItem>> responses = new ArrayList<>();
 
         for (int i = 0; i < p; i++) {
             int pid = pids.get(i);
-            List<String> result=getResponse(pid).getResultList();
+            LxqResponse response = getResponse(pid);
+            List<MsgItem> result = response.getResultList();
             responses.add(result);
         }
 

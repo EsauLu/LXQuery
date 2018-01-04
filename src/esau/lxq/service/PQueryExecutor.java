@@ -9,6 +9,7 @@ import java.util.Set;
 
 import esau.lxq.entry.Axis;
 import esau.lxq.entry.Link;
+import esau.lxq.entry.MsgItem;
 import esau.lxq.entry.Node;
 import esau.lxq.entry.NodeType;
 import esau.lxq.entry.PNode;
@@ -16,6 +17,7 @@ import esau.lxq.entry.RemoteNode;
 import esau.lxq.entry.Step;
 import esau.lxq.net.LxqRequest;
 import esau.lxq.net.LxqResponse;
+import esau.lxq.net.Msg;
 import esau.lxq.net.impl.LxqRequestImpl;
 
 public class PQueryExecutor {
@@ -45,8 +47,8 @@ public class PQueryExecutor {
             int pid = pidList.get(i);
             clientManager.sendRequest(pid, request);
             LxqResponse response = clientManager.getResponse(pid);
-            List<String> result = response.getResultList();
-            tem.add(Node.parseNode(result.get(0)));
+            List<MsgItem> result = response.getResultList();
+            tem.add((Node)result.get(0));
             resultList.add(tem);
         }
 
@@ -147,6 +149,7 @@ public class PQueryExecutor {
         LxqRequest request = new LxqRequestImpl();
         request.setCode(LxqRequest.FIND_CHILD_PNODES);
         request.setMsg(test);
+        request.setType(Msg.PNODE_TYPE);
 
         return sendFindRequests(request, inputLists);
 
@@ -157,6 +160,7 @@ public class PQueryExecutor {
         LxqRequest request = new LxqRequestImpl();
         request.setCode(LxqRequest.FIND_DESCENDANT_PNODES);
         request.setMsg(test);
+        request.setType(Msg.PNODE_TYPE);
 
         return sendFindRequests(request, inputLists);
 
@@ -166,6 +170,7 @@ public class PQueryExecutor {
         LxqRequest request = new LxqRequestImpl();
         request.setCode(LxqRequest.FIND_PARENT_PNODES);
         request.setMsg(test);
+        request.setType(Msg.PNODE_TYPE);
         return sendFindRequests(request, inputLists);
 
     }
@@ -207,6 +212,7 @@ public class PQueryExecutor {
 
         LxqRequest request = new LxqRequestImpl();
         request.setCode(LxqRequest.SHARE_PNODES);
+        request.setType(Msg.PNODE_TYPE);
         request.setInputList(ListUtils.convertPNodeList(toBeShare));
         clientManager.sendRequests(request);
 
@@ -233,6 +239,7 @@ public class PQueryExecutor {
         // Local query
         LxqRequest request = new LxqRequestImpl();
         request.setCode(LxqRequest.FIND_FOLSIB_PNODES);
+        request.setType(Msg.PNODE_TYPE);
         request.setMsg(test);
         List<List<PNode>> outputList = sendFindRequests(request, inputLists);
 
@@ -439,6 +446,7 @@ public class PQueryExecutor {
 
         LxqRequest request = new LxqRequestImpl();
         request.setCode(LxqRequest.SHARE_NODES);
+        request.setType(Msg.NODE_TYPE);
         request.setInputList(ListUtils.convertNodeList(toBeShare));
         clientManager.sendRequests(request);
 

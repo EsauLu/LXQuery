@@ -1,9 +1,9 @@
 package esau.lxq.net.impl;
 
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.List;
 
+import esau.lxq.entry.MsgItem;
 import esau.lxq.net.LxqRequest;
 
 public class LxqRequestImpl implements LxqRequest {
@@ -12,11 +12,13 @@ public class LxqRequestImpl implements LxqRequest {
 
     private String msg;
 
-    private List<String> inputList;
+    private List<MsgItem> inputList;
 
     private String chunk;
 
     private InputStream in;
+
+    private String type = NODE_TYPE;
 
     @Override
     public void setCode(int code) {
@@ -43,13 +45,13 @@ public class LxqRequestImpl implements LxqRequest {
     }
 
     @Override
-    public void setInputList(List<String> inputList) {
+    public void setInputList(List<MsgItem> inputList) {
         // TODO Auto-generated method stub
         this.inputList = inputList;
     }
 
     @Override
-    public List<String> getInputList() {
+    public List<MsgItem> getInputList() {
         // TODO Auto-generated method stub
         return inputList;
     }
@@ -80,42 +82,54 @@ public class LxqRequestImpl implements LxqRequest {
 
     }
 
-    public LxqRequest parse(String reqest) {
+    @Override
+    public void setType(String type) {
         // TODO Auto-generated method stub
-        LxqRequest request = new LxqRequestImpl();
-
-        int k = reqest.indexOf("\n\n");
-
-        String codeStr = reqest.substring(0, k);
-
-        int code = Integer.parseInt(codeStr);
-        request.setCode(Integer.parseInt(codeStr));
-
-        String paramsStr = reqest.substring(k + 2);
-
-        if (code == LxqRequest.CHUNK) {
-
-            request.setChunk(paramsStr);
-
-        } else {
-
-            k = paramsStr.indexOf("\n\n");
-
-            String nameTest = paramsStr.substring(0, k);
-            request.setMsg(nameTest);
-
-            String inputListStr = paramsStr.substring(k + 2).trim();
-            List<String> inputList = new ArrayList<String>();
-            for (String item : inputListStr.split("\n")) {
-                inputList.add(item);
-            }
-            request.setInputList(inputList);
-
-        }
-
-        return request;
-
+        this.type = type;
     }
+
+    @Override
+    public String getType() {
+        // TODO Auto-generated method stub
+        return this.type;
+    }
+
+//    public LxqRequest parse(String reqest) {
+//        // TODO Auto-generated method stub
+//        LxqRequest request = new LxqRequestImpl();
+//
+//        int k = reqest.indexOf("\n\n");
+//
+//        String codeStr = reqest.substring(0, k);
+//
+//        int code = Integer.parseInt(codeStr);
+//        request.setCode(Integer.parseInt(codeStr));
+//
+//        String paramsStr = reqest.substring(k + 2);
+//
+//        if (code == LxqRequest.CHUNK) {
+//
+//            request.setChunk(paramsStr);
+//
+//        } else {
+//
+//            k = paramsStr.indexOf("\n\n");
+//
+//            String nameTest = paramsStr.substring(0, k);
+//            request.setMsg(nameTest);
+//
+//            String inputListStr = paramsStr.substring(k + 2).trim();
+//            List<String> inputList = new ArrayList<String>();
+//            for (String item : inputListStr.split("\n")) {
+//                inputList.add(item);
+//            }
+//            request.setInputList(inputList);
+//
+//        }
+//
+//        return request;
+//
+//    }
 
     @Override
     public String toString() {
@@ -140,28 +154,28 @@ public class LxqRequestImpl implements LxqRequest {
 
     }
 
-    @Override
-    public StringBuilder toMsgText() {
-        // TODO Auto-generated method stub
-        StringBuilder sb = new StringBuilder();
-        sb.append(code);
-        sb.append("\n\n");
-        sb.append(msg);
-        sb.append("\n\n");
-
-        sb.append("-\n");
-        if (inputList != null && inputList.size() > 0) {
-            for (String item : inputList) {
-                sb.append(item);
-                sb.append("\n");
-            }
-        }
-        sb.append("\n");
-
-        sb.append(chunk);
-
-        return sb;
-
-    }
+    // @Override
+    // public StringBuilder toMsgText() {
+    // // TODO Auto-generated method stub
+    // StringBuilder sb = new StringBuilder();
+    // sb.append(code);
+    // sb.append("\n\n");
+    // sb.append(msg);
+    // sb.append("\n\n");
+    //
+    // sb.append("-\n");
+    // if (inputList != null && inputList.size() > 0) {
+    // for (String item : inputList) {
+    // sb.append(item);
+    // sb.append("\n");
+    // }
+    // }
+    // sb.append("\n");
+    //
+    // sb.append(chunk);
+    //
+    // return sb;
+    //
+    // }
 
 }

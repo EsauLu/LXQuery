@@ -1,0 +1,21 @@
+/child::site/descendant::keyword/parent::text
+
+1987 1500 5408 1106 1179 1155 1169 1986 2202 1079 
+
+Number of nodes : 243533
+
+
+/child::site/child::people/child::person[child::profile/child::gender]/child::name
+
+769 902 784 832 851 770 884 2419 916 920 
+
+Number of nodes : 38266
+
+
+/child::site/child::open_auctions/child::open_auction/child::bidder[following-sibling::bidder]
+
+3173 3534 3696 3404 3224 3226 3368 3322 3294 3231 
+
+Number of nodes : 294654
+
+

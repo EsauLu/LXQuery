@@ -4,9 +4,8 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
 import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
 
+import esau.lxq.entry.MsgItem;
 import esau.lxq.entry.Node;
 import esau.lxq.entry.NodeType;
 import esau.lxq.entry.PartialTree;
@@ -25,42 +24,43 @@ public class Worker {
         // TODO Auto-generated constructor stub
         pt = new PartialTree();
     }
-    
-    public List<String> getRoot(){
-        List<String> list=new ArrayList<>();
-        
-        list.add(pt.getRoot().toText());
-        
+
+    public List<MsgItem> getRoot() {
+        List<MsgItem> list = new ArrayList<>();
+
+        list.add(pt.getRoot());
+
         return list;
     }
-    
+
     public PartialTree getPartialTree() {
         return pt;
     }
-    
-    public void computRangs(List<String> inputs){
-        
-        List<Node> rangsList=ListUtils.recoverNodeList(inputs);
-        
-        for(Node n1: rangsList){
-            Node n2=pt.findNodeByUid(n1.getUid());
-            if(n2==null) {
+
+    public void computRangs(List<MsgItem> inputs) {
+
+        List<Node> rangsList = ListUtils.recoverNodeList(inputs);
+
+        for (Node n1 : rangsList) {
+            Node n2 = pt.findNodeByUid(n1.getUid());
+            if (n2 == null) {
                 continue;
             }
             n2.setStart(n1.getStart());
             n2.setEnd(n1.getEnd());
         }
-        
+
     }
 
-    public long computePrePath(String startUid, List<String> auxList) {
+    public long computePrePath(String startUid, List<MsgItem> auxList) {
 
         long uid = Long.parseLong(startUid);
-        if(subtrees.size()==0) {
+        if (subtrees.size() == 0) {
             return uid;
         }
 
         List<Node> pp = ListUtils.recoverNodeList(auxList);
+        auxList.clear();
 
         Node node = subtrees.get(0);
         List<Node> ll = new ArrayList<>();
@@ -97,7 +97,6 @@ public class Worker {
         }
 
         uid = setUids(uid, pt.getRoot());
-        pt.update();
 
         node = subtrees.get(subtrees.size() - 1);
         while (node != null && node.isRightOpenNode()) {
@@ -106,8 +105,10 @@ public class Worker {
             node = node.getLastChild();
         }
 
-        auxList.clear();
         auxList.addAll(ListUtils.convertNodeList(pp));
+
+        subtrees.clear();
+        subtrees = null;
 
         return uid;
     }
@@ -124,7 +125,7 @@ public class Worker {
 
             while (p != null) {
 
-                if(p.isClosedNode()) {
+                if (p.isClosedNode()) {
                     p.setStart(pid);
                     p.setEnd(pid);
                 }
@@ -160,9 +161,9 @@ public class Worker {
         return uid;
     }
 
-    public List<String> selectLeftOpenNode() {
+    public List<MsgItem> selectLeftOpenNode() {
 
-        List<Node> ll = new ArrayList<>();
+        List<MsgItem> ll = new ArrayList<>();
 
         Node root = pt.getRoot();
         Node p = root;
@@ -176,12 +177,12 @@ public class Worker {
             p = p.getFirstChild();
         }
 
-        return ListUtils.convertNodeList(ll);
+        return ll;
     }
 
-    public List<String> selectRightOpenNode() {
+    public List<MsgItem> selectRightOpenNode() {
 
-        List<Node> rl = new ArrayList<>();
+        List<MsgItem> rl = new ArrayList<>();
 
         Node root = pt.getRoot();
         Node p = root;
@@ -195,10 +196,10 @@ public class Worker {
             p = p.getLastChild();
         }
 
-        return ListUtils.convertNodeList(rl);
+        return rl;
 
     }
-    
+
     public void setPid(int pid) {
         this.pid = pid;
     }
@@ -207,64 +208,70 @@ public class Worker {
         this.subtrees = XMLParser.buildSubTrees(xmlDocPath);
     }
 
-    public void printSubTrees() {
+    public void print_SubTrees() {
         System.out.println("--------------------");
         for (Node node : subtrees) {
             Utils.bfsWithRoot(node);
         }
         System.out.println("--------------------");
     }
-    
-    public List<String> getOpenNodes(){
-        List<String> list = new ArrayList<>();
 
-        Set<String > set=new TreeSet<>();
-        Node root=pt.getRoot();
-        
-        Node p=root.getFirstChild();
-        while(p!=null&&!p.isClosedNode()){
-            set.add(p.toText());
-            p=p.getFirstChild();
+    public List<MsgItem> getOpenNodes() {
+        List<MsgItem> list = new ArrayList<>();
+
+        Node root = pt.getRoot();
+        Node parent = new Node();
+        Node p = root;
+        parent.addFirstChild(p);
+
+        while (p.isPreOpenNode()) {
+            list.add(p);
+            parent = p;
+            p = p.getFirstChild();
         }
-        
-        p=root.getLastChild();
-        while(p!=null&&!p.isClosedNode()){
-            set.add(p.toText());
-            p=p.getLastChild();
+
+        Node ln = parent.getFirstChild();
+        while (ln.isLeftOpenNode()) {
+            list.add(ln);
+            ln = ln.getFirstChild();
         }
-        
-        list.addAll(set);
+
+        Node rn = parent.getLastChild();
+        while (rn.isRightOpenNode()) {
+            list.add(rn);
+            rn = rn.getLastChild();
+        }
 
         return list;
     }
 
-//    public List<String> getSubTreesResponse() {
-//        List<String> list = new ArrayList<>();
-//
-//        for (Node root : subtrees) {
-//            list.add(root.toBfsString());
-//        }
-//
-//        if (pt.getRoot() != null) {
-//            list.add("-");
-//            list.add(pt.getRoot().toBfsString());
-//        }
-//
-//        return list;
-//    }
+    // public List<String> getSubTreesResponse() {
+    // List<String> list = new ArrayList<>();
+    //
+    // for (Node root : subtrees) {
+    // list.add(root.toBfsString());
+    // }
+    //
+    // if (pt.getRoot() != null) {
+    // list.add("-");
+    // list.add(pt.getRoot().toBfsString());
+    // }
+    //
+    // return list;
+    // }
 
     public List<String> getResultResponse() {
         return null;
     }
 
-//    public String responseSubTrees() {
-//        StringBuilder sb = new StringBuilder();
-//
-//        for (Node root : subtrees) {
-//            sb.append(root.toBfsString());
-//            sb.append("\n");
-//        }
-//
-//        return sb.toString().trim();
-//    }
+    // public String responseSubTrees() {
+    // StringBuilder sb = new StringBuilder();
+    //
+    // for (Node root : subtrees) {
+    // sb.append(root.toBfsString());
+    // sb.append("\n");
+    // }
+    //
+    // return sb.toString().trim();
+    // }
 }

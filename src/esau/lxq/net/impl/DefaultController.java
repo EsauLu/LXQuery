@@ -6,6 +6,8 @@ import esau.lxq.net.LxqResponse;
 import java.util.ArrayList;
 import java.util.List;
 
+import esau.lxq.entry.MsgItem;
+import esau.lxq.entry.Node;
 import esau.lxq.net.Controller;
 
 public class DefaultController implements Controller {
@@ -35,9 +37,9 @@ public class DefaultController implements Controller {
         System.out.println(request.getChunk());
         
         System.out.println("------------------------");
-        List<String> resList=new ArrayList<>();
+        List<MsgItem> resList=new ArrayList<>();
         for(int i=0;i<3;i++){
-            resList.add("res"+i);
+            resList.add(new Node());
         }
         response.setResultList(resList);
         
@@ -55,18 +57,18 @@ public class DefaultController implements Controller {
         
         System.out.println("Name test : "+request.getMsg());
         
-        List<String> list=request.getInputList();
+        List<MsgItem> list=request.getInputList();
         
         System.out.println();
         
-        for(String item: list){
+        for(MsgItem item: list){
             System.out.println(item);
         }
         
         System.out.println("------------------------");
-        List<String> resList=new ArrayList<>();
+        List<MsgItem> resList=new ArrayList<>();
         for(int i=0;i<5;i++){
-            resList.add("res"+i);
+            resList.add(new Node());
         }
         response.setResultList(resList);
         

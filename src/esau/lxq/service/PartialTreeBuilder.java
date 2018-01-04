@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import esau.lxq.entry.MsgItem;
 import esau.lxq.entry.Node;
 import esau.lxq.net.LxqRequest;
 import esau.lxq.net.LxqResponse;
@@ -89,7 +90,7 @@ public class PartialTreeBuilder {
     private void getPrePath() {
 
         String startUid = "-1";
-        List<String> auxList = null;
+        List<MsgItem> auxList = null;
         LxqRequest request = new LxqRequestImpl();
 
         request.setCode(LxqRequest.COMPUTE_PREPATH);
@@ -99,6 +100,7 @@ public class PartialTreeBuilder {
 
             request.setInputList(auxList);
             request.setMsg(startUid);
+            
             LxqResponse response = clientManager.sendRequestByLock(pid, request);
 
             startUid = response.getMsg();
@@ -152,9 +154,16 @@ public class PartialTreeBuilder {
 
         clientManager.sendChunks(xmlDocPath, pidList);
         
-        List<List<String>> results = clientManager.getResultList(pidList);
+        List<LxqResponse> results = clientManager.getResponseList(pidList);
+        
+        List<String> chunks=new ArrayList<>();
+        
+        for(LxqResponse response: results) {
+            chunks.add(response.getMsg());
+        }
+        chunks.add("");
 
-        clientManager.finxChunks(pidList, results);
+        clientManager.finxChunks(pidList, chunks);
 
         clientManager.getResponseList(pidList);
 

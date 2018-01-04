@@ -3,13 +3,16 @@ package esau.lxq.net.impl;
 import java.util.ArrayList;
 import java.util.List;
 
+import esau.lxq.entry.MsgItem;
 import esau.lxq.net.LxqResponse;
 
 public class LxqResponseImpl implements LxqResponse {
 
     private String msg;
 
-    private List<String> resultList;
+    private List<MsgItem> resultList;
+
+    private String type = NODE_TYPE;
 
     public LxqResponseImpl() {
         super();
@@ -30,20 +33,20 @@ public class LxqResponseImpl implements LxqResponse {
     }
 
     @Override
-    public LxqResponse add(String item) {
+    public LxqResponse add(MsgItem item) {
         // TODO Auto-generated method stub
         resultList.add(item);
         return this;
     }
 
     @Override
-    public void setResultList(List<String> resultList) {
+    public void setResultList(List<MsgItem> resultList) {
         // TODO Auto-generated method stub
         this.resultList = resultList;
     }
 
     @Override
-    public List<String> getResultList() {
+    public List<MsgItem> getResultList() {
         // TODO Auto-generated method stub
         return this.resultList;
     }
@@ -64,21 +67,33 @@ public class LxqResponseImpl implements LxqResponse {
     }
 
     @Override
-    public StringBuilder toMsgText() {
+    public void setType(String type) {
         // TODO Auto-generated method stub
-        StringBuilder sb = new StringBuilder();
-
-        sb.append(msg);
-        sb.append("\n\n");
-        sb.append("-");
-        if (resultList != null && resultList.size() > 0) {
-            for (String item : resultList) {
-                sb.append("\n");
-                sb.append(item);
-            }
-        }
-
-        return sb;
+        this.type = type;
     }
+
+    @Override
+    public String getType() {
+        // TODO Auto-generated method stub
+        return this.type;
+    }
+
+    // @Override
+    // public StringBuilder toMsgText() {
+    // // TODO Auto-generated method stub
+    // StringBuilder sb = new StringBuilder();
+    //
+    // sb.append(msg);
+    // sb.append("\n\n");
+    // sb.append("-");
+    // if (resultList != null && resultList.size() > 0) {
+    // for (String item : resultList) {
+    // sb.append("\n");
+    // sb.append(item);
+    // }
+    // }
+    //
+    // return sb;
+    // }
 
 }

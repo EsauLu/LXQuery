@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Set;
 
 import esau.lxq.entry.Axis;
+import esau.lxq.entry.MsgItem;
 import esau.lxq.entry.Node;
 import esau.lxq.entry.NodeType;
 import esau.lxq.entry.PNode;
@@ -44,8 +45,8 @@ public class QueryExecutor {
             int pid = pidList.get(i);
             clientManager.sendRequest(pid, request);
             LxqResponse response = clientManager.getResponse(pid);
-            List<String> result = response.getResultList();
-            tem.add(Node.parseNode(result.get(0)));
+            List<MsgItem> result = response.getResultList();
+            tem.add((Node)result.get(0));
             resultList.add(tem);
         }
 

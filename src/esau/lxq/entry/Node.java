@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class Node {
+public class Node implements MsgItem{
 
     private long uid;
 
@@ -219,6 +219,7 @@ public class Node {
     }
 
     public String toText() {
+//        return uid + " - " + type + " " + start + " " + end;
         return uid + " " + tagName + " " + type + " " + start + " " + end;
     }
 

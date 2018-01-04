@@ -1,25 +1,31 @@
 package esau.lxq.net.impl;
 
-import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 
+import esau.lxq.entry.MsgItem;
+import esau.lxq.entry.Node;
+import esau.lxq.entry.PNode;
 import esau.lxq.net.LxqClient;
 import esau.lxq.net.LxqRequest;
 import esau.lxq.net.LxqResponse;
+import esau.lxq.net.Msg;
 
 public class LxqClientImpl implements LxqClient {
 
     private String serverIP;
     private int port;
-
-    private LxqResponse response;
 
     private Socket socket = null;
 
@@ -48,7 +54,7 @@ public class LxqClientImpl implements LxqClient {
 
             socket = new Socket();
             socket.connect(new InetSocketAddress(serverIP, port), 60 * 1000);//
-            socket.setSoTimeout(30000);//
+            socket.setSoTimeout(10*60*1000);//
 
             // socket = new Socket(serverIP, port);
             bos = new BufferedOutputStream(socket.getOutputStream());
@@ -111,28 +117,15 @@ public class LxqClientImpl implements LxqClient {
             return false;
         }
 
-        BufferedOutputStream bos = null;
-        try {
+        try {            
 
-            socket = new Socket(serverIP, port);
+            socket = new Socket();
+            socket.connect(new InetSocketAddress(serverIP, port), 60 * 1000);//
+            socket.setSoTimeout(10*60*1000);//
 
-            bos = new BufferedOutputStream(socket.getOutputStream());
+            OutputStream out = socket.getOutputStream();
 
-            StringBuilder text = request.toMsgText();
-
-            int len = 1024;
-
-            while (text.length() > 0) {
-
-                int k = Math.min(text.length(), len);
-                String s = text.substring(0, k);
-                text.delete(0, k);
-
-                bos.write(s.getBytes());
-
-            }
-
-            bos.flush();
+            writeRequest(out, request);
 
         } catch (Exception e) {
             // TODO Auto-generated catch block
@@ -152,36 +145,97 @@ public class LxqClientImpl implements LxqClient {
 
     }
 
+    private void writeRequest(OutputStream out, LxqRequest request) throws Exception {
+        // TODO Auto-generated method stub
+
+        DataOutputStream dos=new DataOutputStream(out);
+        
+        
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(out));
+
+        bw.write("" + request.getCode());
+        bw.write("\n");
+
+        bw.write("" + request.getMsg());
+        bw.write("\n");
+
+        bw.write("" + request.getType());
+        bw.write("\n");
+
+        List<MsgItem> inputList = request.getInputList();
+        if (inputList != null && inputList.size() > 0) {
+            for (MsgItem item : inputList) {
+                bw.write(item.toText());
+                bw.write("\n");
+            }
+        }
+
+        bw.write("\n");
+
+        bw.write("" + request.getChunk());
+
+        bw.flush();
+
+    }
+
+    private LxqResponse readResponse(InputStream in) throws Exception {
+        LxqResponse response = new LxqResponseImpl();
+
+        BufferedReader br = new BufferedReader(new InputStreamReader(in));
+
+        String msg = br.readLine();
+        response.setMsg(msg);
+
+        List<MsgItem> results = new ArrayList<>();
+        String type = br.readLine();
+        if (Msg.NODE_TYPE.equals(type)) {
+            response.setType(Msg.NODE_TYPE);
+            while (true) {
+                String line = br.readLine();
+                if (line == null) {
+                    break;
+                }
+                results.add(Node.parseNode(line.trim()));
+            }
+        } else if (Msg.PNODE_TYPE.equals(type)) {
+            response.setType(Msg.PNODE_TYPE);
+            while (true) {
+                String line = br.readLine();
+                if (line == null) {
+                    break;
+                }
+                results.add(PNode.parsePNode(line.trim()));
+            }
+        }
+        response.setResultList(results);
+
+        return response;
+    }
+
     @Override
     public LxqResponse getResponse() {
-        // TODO Auto-generated method stub
+        // TODO Auto-generated method stub//
+
+        LxqResponse response = null;
 
         if (socket == null || socket.isClosed()) {
             return null;
         }
 
-        StringBuilder sb = new StringBuilder();
-
-        BufferedInputStream bis = null;
+        InputStream inputStream = null;
 
         try {
-            bis = new BufferedInputStream(socket.getInputStream());
 
-            int len = 0;
-            byte[] buff = new byte[8192];
-
-            while ((len = bis.read(buff)) != -1) {
-                String s = new String(buff, 0, len);
-                sb.append(s);
-            }
+            inputStream = socket.getInputStream();
+            response = readResponse(inputStream);
 
         } catch (Exception e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         } finally {
             try {
-                if (bis != null) {
-                    bis.close();
+                if (inputStream != null) {
+                    inputStream.close();
                 }
                 if (socket != null) {
                     socket.close();
@@ -192,42 +246,6 @@ public class LxqClientImpl implements LxqClient {
                 e.printStackTrace();
             }
         }
-
-        return parse(sb);
-    }
-
-    private LxqResponse parse(StringBuilder text) {
-        response = new LxqResponseImpl();
-
-        int k = text.indexOf("\n\n");
-
-        if (k == -1) {
-            response.setMsg(text.toString().trim());
-            return response;
-        }
-
-        String type = text.substring(0, k);
-        response.setMsg(type);
-        text.delete(0, k + 2);
-
-        k = text.indexOf("\n");
-        if (k != -1) {
-            text.delete(0, k + 1);
-        }
-
-        List<String> resultList = new ArrayList<>();
-        while (true) {
-            k = text.indexOf("\n");
-            if (k == -1) {
-                break;
-            }
-            resultList.add(text.substring(0, k));
-            text.delete(0, k + 1);
-        }
-        if (text.length() > 0) {
-            resultList.add(text.toString().trim());
-        }
-        response.setResultList(resultList);
 
         return response;
     }

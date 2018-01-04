@@ -5,15 +5,16 @@ import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
+import esau.lxq.entry.MsgItem;
 import esau.lxq.entry.Node;
 import esau.lxq.entry.PNode;
 import esau.lxq.entry.PartialTree;
 import esau.lxq.net.Controller;
 import esau.lxq.net.LxqRequest;
 import esau.lxq.net.LxqResponse;
+import esau.lxq.net.Msg;
 
 public class ControllerImpl implements Controller {
 
@@ -32,12 +33,14 @@ public class ControllerImpl implements Controller {
         int code = request.getCode();
         String msg = request.getMsg();
 
-        System.out.println("---------------------------------");
+        System.out.println("----------------------");
         System.out.println();
 //        System.out.println(request.toMsgText());
         System.out.println(request.toString());
         System.out.println();
-        System.out.println("---------------------------------");
+        System.out.println("----------------------");
+        
+        long t1=System.currentTimeMillis();
 
         switch (code) {
         case LxqRequest.CHUNK:
@@ -58,11 +61,7 @@ public class ControllerImpl implements Controller {
 
             StringBuilder fix = receiveChunk(request, response);
             
-            List<String> res=new ArrayList<>();
-            res.add(fix.toString());
-            
-            response.setMsg("RECEIVE_CHUNK");
-            response.setResultList(res);
+            response.setMsg(fix.toString());
 
             break;
 
@@ -98,9 +97,13 @@ public class ControllerImpl implements Controller {
 
         case LxqRequest.COMPUTE_PREPATH:
 
-            List<String> auxList = request.getInputList();
+            List<MsgItem> auxList = request.getInputList();
+            
+            request.setInputList(null);
 
-            long uid = worker.computePrePath(msg, auxList);
+            long uid = worker.computePrePath(msg, auxList); 
+
+            worker.getPartialTree().update();
 
             response.setMsg(String.valueOf(uid));
             response.setResultList(auxList);
@@ -109,12 +112,15 @@ public class ControllerImpl implements Controller {
 
         case LxqRequest.COMPUTE_RANGS:
 
-            List<String> rangsList = request.getInputList();
+            List<MsgItem> rangsList = request.getInputList();            
 
             worker.computRangs(rangsList);
+            
+            rangsList=null;
+            request.setInputList(null);
 
             response.setMsg("COMPUTE_RANGS");
-            response.setResultList(worker.getOpenNodes());
+//            response.setResultList(worker.getOpenNodes());
 
             break;
 
@@ -128,7 +134,10 @@ public class ControllerImpl implements Controller {
         case LxqRequest.FIND_CHILD_NODES: {
             PartialTree pt = worker.getPartialTree();
 
-            List<String> inputList = request.getInputList();
+            List<MsgItem> inputList = request.getInputList();
+
+            request.setInputList(null);
+            
             List<Node> resultList = pt.findChildNodes(ListUtils.recoverNodeList(inputList), msg);
 
             response.setMsg("FIND_CHILD_NODES");
@@ -140,7 +149,7 @@ public class ControllerImpl implements Controller {
         case LxqRequest.FIND_DESCENDANT_NODES: {
             PartialTree pt = worker.getPartialTree();
 
-            List<String> inputList = request.getInputList();
+            List<MsgItem> inputList = request.getInputList();
             List<Node> resultList = pt.findDescendantNodes(ListUtils.recoverNodeList(inputList), msg);
 
             response.setMsg("FIND_DESCENDANT_NODES");
@@ -152,7 +161,7 @@ public class ControllerImpl implements Controller {
         case LxqRequest.FIND_PARENT_NODES: {
             PartialTree pt = worker.getPartialTree();
 
-            List<String> inputList = request.getInputList();
+            List<MsgItem> inputList = request.getInputList();
             List<Node> resultList = pt.findParentNodes(ListUtils.recoverNodeList(inputList), msg);
 
             response.setMsg("FIND_PARENT_NODES");
@@ -164,7 +173,7 @@ public class ControllerImpl implements Controller {
         case LxqRequest.SHARE_NODES: {
             PartialTree pt = worker.getPartialTree();
 
-            List<String> inputList = request.getInputList();
+            List<MsgItem> inputList = request.getInputList();
             List<Node> resultList = pt.findCorrespondingNodes(ListUtils.recoverNodeList(inputList));
 
             response.setMsg("SHARE_NODES");
@@ -176,7 +185,7 @@ public class ControllerImpl implements Controller {
         case LxqRequest.FIND_FOLSIB_NODES: {
             PartialTree pt = worker.getPartialTree();
 
-            List<String> inputList = request.getInputList();
+            List<MsgItem> inputList = request.getInputList();
             List<Node> resultList = pt.findFolSibNodes(ListUtils.recoverNodeList(inputList), msg);
 
             response.setMsg("FIND_FOLSIB_NODES");
@@ -188,7 +197,7 @@ public class ControllerImpl implements Controller {
         case LxqRequest.FIND_NODES_BY_UID: {
             PartialTree pt = worker.getPartialTree();
 
-            List<String> inputList = request.getInputList();
+            List<MsgItem> inputList = request.getInputList();
 
             List<Node> resultList = pt.findNodesByUid(ListUtils.recoverNodeList(inputList));
 
@@ -201,10 +210,11 @@ public class ControllerImpl implements Controller {
         case LxqRequest.FIND_CHILD_PNODES: {
             PartialTree pt = worker.getPartialTree();
 
-            List<String> inputList = request.getInputList();
+            List<MsgItem> inputList = request.getInputList();
             List<PNode> resultList = pt.findChildPNodes(ListUtils.recoverPNodeList(inputList), msg);
 
             response.setMsg("FIND_CHILD_PNODES");
+            response.setType(Msg.PNODE_TYPE);
             response.setResultList(ListUtils.convertPNodeList(resultList));
 
             break;
@@ -214,10 +224,11 @@ public class ControllerImpl implements Controller {
 
             PartialTree pt = worker.getPartialTree();
 
-            List<String> inputList = request.getInputList();
+            List<MsgItem> inputList = request.getInputList();
             List<PNode> resultList = pt.findDescendantPNodes(ListUtils.recoverPNodeList(inputList), msg);
 
             response.setMsg("FIND_DESCENDANT_PNODES");
+            response.setType(Msg.PNODE_TYPE);
             response.setResultList(ListUtils.convertPNodeList(resultList));
 
             break;
@@ -226,10 +237,11 @@ public class ControllerImpl implements Controller {
         case LxqRequest.FIND_PARENT_PNODES: {
             PartialTree pt = worker.getPartialTree();
 
-            List<String> inputList = request.getInputList();
+            List<MsgItem> inputList = request.getInputList();
             List<PNode> resultList = pt.findParentPNodes(ListUtils.recoverPNodeList(inputList), msg);
 
             response.setMsg("FIND_PARENT_PNODES");
+            response.setType(Msg.PNODE_TYPE);
             response.setResultList(ListUtils.convertPNodeList(resultList));
 
             break;
@@ -238,10 +250,11 @@ public class ControllerImpl implements Controller {
         case LxqRequest.SHARE_PNODES: {
             PartialTree pt = worker.getPartialTree();
 
-            List<String> inputList = request.getInputList();
+            List<MsgItem> inputList = request.getInputList();
             List<PNode> resultList = pt.findCorrespondingPNodes(ListUtils.recoverPNodeList(inputList));
 
             response.setMsg("SHARE_PNODES");
+            response.setType(Msg.PNODE_TYPE);
             response.setResultList(ListUtils.convertPNodeList(resultList));
 
             break;
@@ -250,30 +263,35 @@ public class ControllerImpl implements Controller {
         case LxqRequest.FIND_FOLSIB_PNODES: {
             PartialTree pt = worker.getPartialTree();
 
-            List<String> inputList = request.getInputList();
+            List<MsgItem> inputList = request.getInputList();
 
             List<PNode> resultList = pt.findFolSibPNodes(ListUtils.recoverPNodeList(inputList), msg);
 
             response.setMsg("FIND_FOLSIB_PNODES");
+            response.setType(Msg.PNODE_TYPE);
             response.setResultList(ListUtils.convertPNodeList(resultList));
 
             break;
         }
 
         case LxqRequest.FIND_PNODES_BY_UID: {
+            response.setType(Msg.PNODE_TYPE);
             break;
         }
 
         default:
             break;
         }
+        
+        long t2=System.currentTimeMillis();
 
         System.out.println();
 //        System.out.println(response.toMsgText());
         System.out.println(response.toString());
         System.out.println();
 
-        System.out.println("======================================");
+        System.out.println("----------------------");
+        System.out.println("=========    "+  (t2-t1) +"ms    =========");
 
     }
 

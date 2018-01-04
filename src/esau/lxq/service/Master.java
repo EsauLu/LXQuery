@@ -1,12 +1,15 @@
 package esau.lxq.service;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.List;
 
 import esau.lxq.entry.Node;
 import esau.lxq.entry.Step;
 import esau.lxq.parser.XPathParser;
-import esau.lxq.utils.Utils;
 
 public class Master {
 
@@ -14,57 +17,34 @@ public class Master {
 
     private List<Integer> pidList;
 
-    private ClientManager clientManager = new ClientManager();
+    private ClientManager clientManager;
 
     private PartialTreeBuilder builder;
 
-    private PQueryExecutor queryExecutor;
-
-    private String[] xpaths = {
-            // "/descendant::A[descendant::B/descendant::C/parent::B]"
-            // +
-            // "/following-sibling::B[descendant::B/descendant::C[descendant::G/descendant::H/parent::I]/parent::B]",
-
-            // "/child::A/descendant::B/descendant::C",
-            // "/descendant::B[/descendant::E/parent::C]",
-            // "/descendant::B[following-sibling::B/child::C]",
-            // "/descendant::C[following-sibling::D/parent::B/child::B]",
-
-            // "/child::A/descendant::B/descendant::C",
-            // "/descendant::D[parent::B[descendant::E]]" ,
-            // "/child::*",
-            // "/descendant::*/child::C",
-
-            // // Q1:
-            // "/child::A/descendant::B/descendant::C/parent::B",
-            //
-            // // Q2:
-            // "/descendant::B/following-sibling::B",
-            //
-            // // Q3:
-            // "/descendant::B[following-sibling::B/child::C]/child::C",
-
-            // //Q4
-            "/child::site/descendant::keyword/parent::text",
-            // //Q5
-            // "/child::site/child::people/child::person[child::profile/child::gender]/child::name",
-            // // //Q6
-            // "/child::site/child::open_auctions/child::open_auction/child::bidder[following-sibling::bidder]",
-            // // //Q7
-            // "/child::site/child::closed_auctions/child::closed_auction/child::annotation/child::description/child::text/child::keyword",
-
-    };
+    private QueryExecutor queryExecutor;
+    private String[] xpaths = null;
+    private String xmlDocPath = null;
 
     public Master() {
         super();
         // TODO Auto-generated constructor stub
     }
 
-    public Master(int num) {
-        this.workerNum = num;
+    public Master(String[] workerIps, int port) {
+        this.clientManager = new ClientManager(workerIps, port);
     }
 
-    public void start() {
+    public void init(int num, String[] xpaths, String xmlDocPath) {
+        this.workerNum = num;
+        this.xpaths = xpaths;
+        this.xmlDocPath = xmlDocPath;
+    }
+
+    public void start() throws Exception{
+
+        if (xpaths == null || xmlDocPath == null) {
+            return;
+        }
 
         pidList = new ArrayList<>();
         for (int i = 0; i < workerNum; i++) {
@@ -73,18 +53,10 @@ public class Master {
 
         clientManager.initClients(pidList);
 
-        // String xmlDocPath = "res/test0.xml";
-//         String xmlDocPath = "res/test2.xml";
-        String xmlDocPath = "/Users/imac/Desktop/standard";
-       // String xmlDocPath = "/Users/imac/Desktop/xmark40_0.xml";
-//        String xmlDocPath = "C:/standard";
-//        String xmlDocPath = "C:/xmark40_0.xml";
-
         long t1 = 0;
         long t2 = 0;
 
-        System.out.println("Building Partial trees.");
-        System.out.println("Please wait...");
+        System.out.println("Build Partial trees.");
 
         builder = new PartialTreeBuilder(workerNum, pidList, clientManager);
 
@@ -92,42 +64,81 @@ public class Master {
         builder.build(xmlDocPath);
         t2 = System.currentTimeMillis();
 
-        System.out.println("Complete!");
         System.out.println("Time out : " + (t2 - t1) + " ms");
 
-        queryExecutor = new PQueryExecutor(pidList, clientManager);
+        queryExecutor = new QueryExecutor(pidList, clientManager);
 
-        System.out.println("==============================");
+        System.out.println("=============================================");
         System.out.println();
-        System.out.println("Results :");
+        System.out.println("Query results :");
         System.out.println();
+        
+        File file=new File("result"+workerNum+".txt");
+        if(file.exists()) {
+            file.delete();
+        }
+        file.createNewFile();
+        BufferedWriter bw=new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file)));
 
         for (int i = 0; i < xpaths.length; i++) {
 
             String xpath = xpaths[i];
 
-            // System.out.println("---------------------------------------------");
-            // System.out.println();
-            // System.out.println("XPath : " + xpath);
-            // System.out.println();
-            // System.out.println("------------------------------");
-
             Step steps = XPathParser.parseXpath(xpath);
 
-            System.out.print("Q" + (i + 4) + " : ");
-            for (int j = 0; j < 1; j++) {
+            System.out.println("Q" + (i + 4) + " : " + xpath);
+            bw.write(xpath);
+            bw.write("\n");
+            bw.write("\n");
+
+            System.out.print("Time out : ");
+            List<Long> counts=new ArrayList<>();
+            for (int j = 0; j < 10; j++) {
                 t1 = System.currentTimeMillis();
                 List<List<Node>> resultLists = queryExecutor.query(steps);
-                resultLists = null;
                 t2 = System.currentTimeMillis();
-                System.out.print((t2 - t1) + "ms  ");
+
+                long count = 0;
+                for (List<Node> list : resultLists) {
+
+                    for (Node node : list) {
+                        if (node.isClosedNode() || node.isLeftOpenNode()) {
+                            count++;
+                        }
+                    }
+
+                }
+                counts.add(count);
+
+                System.out.print((t2 - t1) + "ms ");
+                bw.write(String.valueOf(t2 - t1));
+                bw.write(" ");
+
+                // Utils.print(resultLists);
+                resultLists = null;
+
+            }
+            bw.write("\n");
+            System.out.println();
+            System.out.print("Number of nodes : ");
+            
+            for(Long count: counts) {
+                System.out.print(count+" ");
             }
             System.out.println();
+            System.out.println();
+
+            bw.write("\n");
+            bw.write("Number of nodes : ");
+            bw.write(""+counts.get(0));
+            bw.write("\n");
+            bw.write("\n");
+            bw.write("\n");
 
         }
-        System.out.println();
 
         System.out.println("=============================================");
+        bw.close();
 
     }
 
